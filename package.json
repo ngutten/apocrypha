@@ -1,0 +1,12 @@
+{
+  "name": "end-of-time",
+  "private": true,
+  "description": "Errata, Palimpsest and Apocrypha at the End of Time: three scrubbable-history games on one exact, event-driven engine.",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node build.js && node apocrypha/test/fuzz.js && node apocrypha/test/test.js && node palimpsest/test/fuzz.js && node errata/test/fuzz.js",
+    "test:browser": "node build.js apocrypha && node apocrypha/test/err.js && node apocrypha/test/shot.js && node apocrypha/test/late.js && node apocrypha/test/tight.js && node apocrypha/test/input.js && node apocrypha/test/cold.js",
+    "prepublish-check": "npm test && npm run test:browser"
+  },
+  "devDependencies": { "playwright": "^1.48.0" }
+}

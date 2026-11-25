@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Errata at the End of Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* One world, one theme: an archive at the end of time. Slate and lamplight.
+     Layout: the river of lanes spans the top and carries all the color; three quiet columns below it. */
+  --ink:#0f1518; --slate:#172026; --slate2:#1d2930; --line:#2a363d;
+  --bone:#e7e0cf; --dim:#8d9a9c; --brass:#cfa650; --lamp:#f0d898; --verd:#62b0a3; --ember:#d0603f;
+  --display:"IM Fell English SC","IM Fell English",Georgia,serif;
+  --serif:"IM Fell English",Georgia,serif;
+  --body:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--bone);font:15px/1.35 var(--body)}
+body{padding:0 16px 40px;max-width:1500px;margin:0 auto}
+button{font:inherit;color:inherit;background:var(--slate2);border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:4px 10px}
+button:hover:not(:disabled){border-color:var(--brass)}
+button:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid var(--lamp);outline-offset:1px}
+button:disabled{opacity:.35;cursor:default}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
+h3{font-size:15px;letter-spacing:.06em;color:var(--brass);margin:14px 0 6px;display:flex;gap:8px;align-items:baseline}
+h3 .dim{font:13px var(--body);letter-spacing:0}
+.dim{color:var(--dim)} .bad{color:var(--ember)} .num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+small{color:var(--dim);font-size:13px}
+
+#top{display:flex;align-items:center;gap:14px;padding:14px 0 10px;flex-wrap:wrap}
+#glass{border:none;background:none;padding:2px;line-height:0}
+#glass svg{width:26px;height:34px}
+#glass.tilt svg{animation:tilt .35s ease}
+@keyframes tilt{40%{transform:rotate(24deg)}100%{transform:rotate(0)}}
+h1{font-size:24px;letter-spacing:.04em;margin-right:auto}
+#hz{font-variant-numeric:tabular-nums;display:flex;gap:10px;align-items:baseline}
+#hz b{font:400 20px var(--display);color:var(--lamp)} #hz span{color:var(--verd)}
+#bArchive span{color:var(--lamp);margin-left:6px;font-variant-numeric:tabular-nums}
+
+#river{display:grid;grid-template-columns:168px 1fr;border:1px solid var(--line);border-radius:6px;background:var(--slate);overflow:hidden}
+#lanes{padding-top:0;border-right:1px solid var(--line)}
+.lhead{height:40px;display:flex;align-items:flex-end;padding:0 10px 6px;color:var(--dim);font-size:13px}
+.lane{height:46px;padding:5px 8px 0 12px;position:relative;cursor:pointer;border-left:3px solid transparent;overflow:hidden}
+.lane.on{border-left-color:var(--h);background:var(--slate2)}
+.lane b{display:block;font:400 16px/1.1 var(--serif);color:var(--h);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:44px}
+.lane small{display:block;white-space:nowrap;font-size:12px}
+.lane .lt{position:absolute;right:4px;top:4px;display:none;gap:2px}
+.lane:hover .lt,.lane.on .lt{display:flex}
+.lane .lt button{padding:0 5px;font-size:12px;background:var(--ink)} .lane .lt .ask{color:var(--ember);border-color:var(--ember)}
+.lane input{width:100%;font:16px var(--serif);background:var(--ink);color:var(--bone);border:1px solid var(--brass);border-radius:3px;padding:3px 5px;margin-top:3px}
+#cv{display:block;width:100%;cursor:ew-resize;touch-action:none}
+
+#bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 0 4px}
+#curY{min-width:210px;display:flex;gap:10px;align-items:baseline;font-variant-numeric:tabular-nums}
+#curY b{font:400 20px var(--display)} #curY span{color:var(--dim);font-size:13px}
+#bar .sp{flex:1}
+#bFollow.on{border-color:var(--lamp);color:var(--lamp)}
+#hint{min-height:22px;color:var(--verd);font:italic 16px var(--serif);padding:2px 0 6px;max-width:95ch}
+
+main{display:grid;grid-template-columns:minmax(280px,1fr) minmax(300px,1.25fr) minmax(280px,1fr);gap:16px;align-items:start}
+main>section{background:var(--slate);border:1px solid var(--line);border-radius:6px;padding:12px 14px 14px;min-width:0}
+.civ h2{font-size:22px} .civ p{margin:2px 0 8px;color:var(--dim)}
+.people{display:flex;gap:6px;align-items:baseline;margin-bottom:6px} .people b{font:400 22px var(--display)} .people .g{margin-left:auto;color:var(--dim);font-size:13px}
+.clim{color:var(--ember);font-size:14px;margin-bottom:6px}
+.fallen{border-left:3px solid var(--ember);padding:6px 10px;background:var(--ink);color:var(--dim);margin-bottom:8px} .fallen b{display:block;color:var(--ember);font:400 17px var(--serif)}
+table{width:100%;border-collapse:collapse} td{padding:3px 4px;border-top:1px solid var(--line);vertical-align:middle}
+.res td:first-child{white-space:nowrap} .res i,.c i,.sum i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px}
+.res .rate{color:var(--verd);width:64px} .res .note{color:var(--dim);font-size:13px;text-align:right}
+.res tr.warn td{color:var(--ember)} .res tr.warn .note{color:var(--ember)}
+.jobs small{display:block;font-size:12px;line-height:1.1} .jobs .ud{width:44px;white-space:nowrap} .jobs .ud button{padding:0 4px;font-size:10px;line-height:16px}
+.jobs .lim{white-space:nowrap;text-align:right} .jobs .lim button{padding:0 7px} .jobs .lim span{display:inline-block;min-width:26px;text-align:center;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px} .grid.one{grid-template-columns:1fr}
+.w{text-align:left;padding:6px 9px;display:flex;flex-direction:column;gap:2px}
+.w b{font-weight:500;display:flex;justify-content:space-between;gap:8px} .w .n{color:var(--dim);font-weight:400;font-variant-numeric:tabular-nums}
+.w small{font-size:12px;line-height:1.2}
+.w.short{background:var(--slate);border-style:dashed} .w.short b{color:var(--dim)}
+.w.creed{border-color:var(--brass)} .w.reg{border-color:var(--lamp);background:#2a2717}
+.cost{display:flex;gap:10px;flex-wrap:wrap;font-variant-numeric:tabular-nums;font-size:14px} .c.no{color:var(--ember)} .c i{margin-right:4px}
+.proj{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin-bottom:6px} .proj div{grid-column:1/3;height:4px;background:var(--ink);border-radius:2px} .proj i{display:block;height:100%;background:var(--verd);border-radius:2px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin:0} .tags span{border:1px solid var(--line);border-radius:10px;padding:0 8px;font-size:13px;color:var(--dim)}
+.orders{list-style:none;margin:0;padding:0;max-height:300px;overflow:auto}
+.orders li{display:grid;grid-template-columns:48px 1fr auto 22px;gap:6px;align-items:center;padding:2px 2px;border-top:1px solid var(--line);cursor:pointer;font-size:14px}
+.orders li:hover{background:var(--slate2)} .orders .y,.log .y{color:var(--dim);font-variant-numeric:tabular-nums;text-align:right}
+.orders .s{color:var(--verd);font-size:12px} .orders .wait .s{color:var(--brass)} .orders .void{color:var(--dim);text-decoration:line-through} .orders .void .s{color:var(--ember)}
+.orders button{padding:0;border:none;background:none;color:var(--dim);font-size:12px} .orders button:hover{color:var(--ember)}
+.orders .now{display:block;cursor:default;color:var(--lamp);font-size:12px;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--lamp);padding:1px 2px}
+.log{list-style:none;margin:0;padding:0;font:15px/1.3 var(--serif)} .log li{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:3px 2px;border-top:1px solid var(--line)}
+.log .y{font:13px var(--body);padding-top:2px} .log .omen{font-style:italic;color:var(--dim)} .log .bad,.log .fall{color:var(--ember)} .log .feat,.log .creed{color:var(--lamp)}
+
+#toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:30;max-width:min(340px,calc(100vw - 32px))}
+.toast{background:var(--slate2);border:1px solid var(--line);border-left:3px solid var(--verd);border-radius:4px;padding:8px 12px;display:flex;flex-direction:column;animation:rise .25s ease}
+.toast.echo{border-left-color:var(--lamp)} .toast b{font:400 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)} .toast span{font:18px var(--serif);color:var(--lamp)}
+@keyframes rise{from{transform:translateY(8px);opacity:.3}}
+#modal{position:fixed;inset:0;background:rgba(8,11,13,.8);z-index:40;display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
+#modal[hidden]{display:none}
+#mBox{background:var(--slate);border:1px solid var(--line);border-radius:6px;max-width:860px;width:100%;padding:22px 26px 24px;position:relative}
+#mBox h2{font-size:28px;color:var(--lamp);margin-bottom:8px} #mBox>button.x{position:absolute;right:12px;top:12px}
+.lede,.story{font:17px/1.45 var(--serif);max-width:65ch} .story p{margin:0 0 12px}
+.primary{border-color:var(--lamp);color:var(--lamp);padding:7px 18px;font:17px var(--serif)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.sum{list-style:none;padding:0;margin:0} .sum li{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:3px 0;font-variant-numeric:tabular-nums} .sum .sub{padding-left:14px;color:var(--dim)} .sum .tot{color:var(--lamp)}
+.trial{border-top:1px solid var(--line);padding:6px 0} .trial b{color:var(--ember);font-weight:500} .trial p{margin:2px 0 0}
+.echoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.echo{border:1px dashed var(--line);border-radius:4px;padding:8px 10px;color:var(--dim)} .echo b{font:400 16px var(--serif)} .echo p{margin:2px 0}
+.echo.got{border:1px solid var(--brass);color:var(--bone)} .echo.got b{color:var(--lamp)}
+.saverow{display:flex;gap:8px;flex-wrap:wrap} .saverow input{flex:1;min-width:160px;background:var(--ink);border:1px solid var(--line);color:var(--bone);border-radius:4px;padding:4px 8px;font:inherit} .danger{color:var(--ember)}
+@media (max-width:1000px){main{grid-template-columns:1fr 1fr} main>section:last-child{grid-column:1/3}}
+@media (max-width:640px){main,.cols{grid-template-columns:1fr} main>section:last-child{grid-column:auto} #river{grid-template-columns:112px 1fr} .lane small{display:none} .lane b{padding-right:0} h1{font-size:19px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header id="top">
+  <button id="glass" data-a="glass" aria-label="Hourglass" title="The Archive's hourglass"><svg viewBox="0 0 26 34" fill="none" stroke="#cfa650" stroke-width="1.5"><path d="M4 2h18M4 32h18M6 2c0 9 7 11 7 15s-7 6-7 15M20 2c0 9-7 11-7 15s7 6 7 15"/><path d="M9 29c1-3 3-4 4-4s3 1 4 4z" fill="#f0d898" stroke="none"/><path d="M13 17v7" stroke="#f0d898" stroke-dasharray="1 2"/></svg></button>
+  <h1>Errata at the End of Time</h1>
+  <div id="hz"></div>
+  <button id="bArchive" data-a="archive">Archive<span id="nEcho">0</span></button>
+</header>
+<section id="river" aria-label="The river of lanes">
+  <div id="lanes"></div>
+  <canvas id="cv" tabindex="0" aria-label="Timeline. Drag to move the cursor through the years, scroll to zoom."></canvas>
+</section>
+<nav id="bar" aria-label="Time controls">
+  <div id="curY"></div>
+  <button data-a="prev" title="Previous event in this lane (,)">⏮</button>
+  <button data-a="back" title="One year back (←, shift for ten)">◀</button>
+  <button data-a="fwd" title="One year on (→, shift for ten)">▶</button>
+  <button data-a="next" title="Next event in this lane (.)">⏭</button>
+  <button id="bFollow" data-a="follow" title="Keep the cursor on the horizon (End)">Ride the horizon</button>
+  <button id="bFit" data-a="fit" hidden>Show all years</button>
+  <span class="sp"></span>
+  <button data-a="fork" title="Copy this lane, up to the cursor, into a new lane (F)">Fork here</button>
+  <button data-a="unravel" title="Remove every order in this lane after the cursor">Unravel after cursor</button>
+  <button data-a="undo" title="Undo the last change to a lane's orders (Ctrl+Z)">Undo</button>
+</nav>
+<div id="hint" role="status"></div>
+<main>
+  <section><div id="pState"></div><div id="pJobs"></div></section>
+  <section id="pWorks"></section>
+  <section><div id="pOrders"></div><div id="pLog"></div></section>
+</main>
+<div id="toasts" aria-live="polite"></div>
+<div id="modal" hidden><div id="mBox" role="dialog" aria-modal="true"><button class="x" data-a="close" aria-label="Close">✕</button><div id="mBody"></div></div></div>
+<script>
+/*ENGINE*/
+/*UI*/
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
+</script>
+</body>
+</html>

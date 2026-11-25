@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valley Map Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{ /* Same world as the game: slate and lamplight. The map is the only thing on the page that is allowed to be ornate. */
+  --ink:#0f1518; --slate:#172026; --line:#2a363d; --bone:#e7e0cf; --dim:#8d9a9c; --lamp:#f0d898; --verd:#62b0a3;
+  --display:"IM Fell English SC","IM Fell English",Georgia,serif; --serif:"IM Fell English",Georgia,serif; --body:"Alegreya Sans","Segoe UI",system-ui,sans-serif; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--bone);font:15px/1.4 var(--body)}
+body{padding:14px 16px 40px;max-width:1280px;margin:0 auto}
+h1{font:400 24px var(--display);letter-spacing:.04em;margin:0 0 2px}
+p{margin:0 0 10px;color:var(--dim);max-width:75ch}
+#bar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+button{font:inherit;color:inherit;background:#1d2930;border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:5px 12px}
+button:hover{border-color:var(--lamp)} button:focus-visible{outline:2px solid var(--lamp);outline-offset:1px}
+button[aria-pressed=true]{border-color:var(--lamp);color:var(--lamp)}
+#wrap{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--slate)}
+canvas{display:block;width:100%;cursor:pointer}
+#info{min-height:44px;padding:8px 2px;font:italic 17px var(--serif);color:var(--verd)}
+#info b{font:400 19px var(--display);color:var(--bone);font-style:normal;margin-right:8px}
+</style>
+</head>
+<body>
+<h1>Valley Map Study</h1>
+<p>One seeded valley, drawn entirely from its site graph. Nothing here is a stored image. Hover a site to read it. The controls show the things worth judging: a different valley, how unexplored ground looks, other lanes showing through, and the two papers.</p>
+<div id="bar">
+  <button id="bSeed">Draw another valley</button>
+  <button id="bFog" aria-pressed="true">Unexplored ground hidden</button>
+  <button id="bGhost" aria-pressed="true">Other lanes showing through</button>
+  <button id="bPaper" aria-pressed="true">Vellum paper</button>
+</div>
+<div id="wrap"><canvas id="cv" aria-label="A procedurally drawn map of the valley"></canvas></div>
+<div id="info" role="status"></div>
+<script>
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const TER = {
+  plain: { n: 'River plain', fav: ['farmer'], c: '#a9bf6a', suf: ['Ford', 'Mead', 'Reach'] },
+  forest: { n: 'Forest', fav: ['woodcutter', 'armorer'], c: '#5f9a78', suf: ['Holt', 'Shade', 'Weald'] },
+  hills: { n: 'Hills', fav: ['miner', 'smith'], c: '#b7a58c', suf: ['Tor', 'Scar', 'Delve'] },
+  ruins: { n: 'Ruins', fav: ['scholar'], c: '#8fa3d6', suf: ['Gate', 'Hold', 'Stair'] },
+  peak: { n: 'High peak', fav: ['priest'], c: '#c48bb8', suf: ['Horn', 'Crown', 'Spire'] },
+  marsh: { n: 'Marsh', fav: [], c: '#7d8c7a', suf: ['Fen', 'Mire', 'Sink'] },
+  shore: { n: 'Empty strand', fav: [], c: '#d0603f', suf: [] }
+};
+const FEAT = {
+  relic_sword: 'The Unbroken Sword lies here, unfinished.', relic_bell: 'The Bell That Rings Backward lies here, uncast.', relic_lens: 'The Lens of Last Light lies here, unground.',
+  deep: 'A vein far too rich for a hill this size. Something is asleep under it, and mining will wake it.',
+  pit: 'A plague pit. A third of any people who settle here die of it.',
+  hint_terrace: 'Terraced walls, older than the oldest song. Somebody once made this ground hold more than it should.', hint_mill: 'A millstone the size of a house, cracked, beside a dry race.', hint_lib: 'Shelves cut into the rock, floor to roof, every one of them empty.', hint_temple: 'A nave with no roof. A whisper at one end is a shout at the other.', hint_foundry: 'A casting pit, and in it the mould of something very large.',
+  cache: 'A cache of seasoned timber and sealed grain.', vault: 'A vault of tablets, still legible.', stones: 'Standing stones that hum at dusk.', herd: 'A valley of half-tame cattle.'
+};
+function makeMap(seed) {
+  const R = rng(seed), pts = [{ x: 0, y: 0 }]; let tries = 0;
+  while (pts.length < 20 && tries++ < 9000) { const a = R() * 6.2832, r = Math.sqrt(R()), x = Math.cos(a) * r, y = Math.sin(a) * r * .62; if (pts.every(p => Math.hypot(p.x - x, p.y - y) > .215)) pts.push({ x, y }); }
+  const n = pts.length, S = pts.map((p, id) => ({ id, x: p.x, y: p.y, adj: [], ter: 'plain', feat: null }));
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { // Gabriel graph: planar-ish and always connected
+    const mx = (S[i].x + S[j].x) / 2, my = (S[i].y + S[j].y) / 2, d = Math.hypot(S[i].x - S[j].x, S[i].y - S[j].y), r = d / 2 - 1e-9;
+    if (S.every((s, k) => k === i || k === j || Math.hypot(s.x - mx, s.y - my) >= r)) { const len = Math.max(12, Math.round(d * 110)); S[i].adj.push({ to: j, len }); S[j].adj.push({ to: i, len }); }
+  }
+  const D = S.map((_, i) => S.map((_, j) => i === j ? 0 : Infinity));
+  for (const s of S) for (const e of s.adj) D[s.id][e.to] = e.len;
+  for (let k = 0; k < n; k++) for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (D[i][k] + D[k][j] < D[i][j]) D[i][j] = D[i][k] + D[k][j];
+  S.forEach(s => { s.dist = D[0][s.id]; });
+  const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const by = S.slice(1).sort((a, b) => a.dist - b.dist), bag = shuf(['plain', 'plain', 'plain', 'plain', 'forest', 'forest', 'forest', 'hills', 'hills', 'hills', 'ruins', 'ruins', 'ruins', 'peak', 'peak', 'peak', 'marsh', 'marsh']);
+  by.forEach((s, i) => { s.ter = i === 0 ? 'forest' : i === 1 ? 'hills' : bag[(i - 2) % bag.length]; });
+  const far = by.slice(-10), rel = [far[far.length - 1]];
+  while (rel.length < 3) { let best = null, bv = -1; for (const s of far) if (!rel.includes(s)) { const v = Math.min(s.dist, ...rel.map(r => D[r.id][s.id])); if (v > bv) { bv = v; best = s; } } rel.push(best); }
+  shuf(['sword', 'bell', 'lens']).forEach((k, i) => { rel[i].feat = 'relic_' + k; });
+  const free = () => by.filter(s => !s.feat);
+  let deep = free().filter(s => s.ter === 'hills' && by.indexOf(s) >= 3).pop() || free().slice(-1)[0]; deep.ter = 'hills'; deep.feat = 'deep';
+  const pitC = free().filter(s => by.indexOf(s) >= 3); if (pitC.length) pitC[Math.floor(R() * pitC.length)].feat = 'pit';
+  shuf(free()).slice(0, 9).forEach((s, i) => { s.feat = ['hint_terrace', 'hint_mill', 'hint_lib', 'hint_temple', 'hint_foundry', 'cache', 'vault', 'stones', 'herd'][i]; });
+  const pre = shuf(['Orrin', 'Kesh', 'Vale', 'Mara', 'Tolm', 'Isk', 'Brae', 'Dun', 'Ysa', 'Corr', 'Ael', 'Pell', 'Hask', 'Nim', 'Ruth', 'Ostra', 'Vesk', 'Lorn', 'Emm', 'Thar', 'Quil', 'Sav']);
+  S.forEach((s, i) => { s.name = i === 0 ? 'Hearthford' : pre[i % pre.length] + ' ' + TER[s.ter].suf[Math.floor(R() * 3)]; });
+  // the strand: nothing can be built there. The Host lands on it and takes every road out.
+  let mx = -9; for (const q of S) mx = Math.max(mx, q.x);
+  const e2 = S.slice(1).sort((a, b) => b.x - a.x).slice(0, 2), sh = { id: n, x: mx + .27, y: (e2[0].y + e2[1].y) / 2, adj: [], ter: 'shore', feat: null, shore: 1, name: 'The Ashen Strand' };
+  const near = S.slice(1).map(q => [Math.hypot(q.x - sh.x, q.y - sh.y), q]).sort((a, b) => a[0] - b[0]);
+  near.slice(0, 3).forEach(([d, q], i) => { if (i === 2 && d > near[1][0] * 1.5) return; const len = Math.max(12, Math.round(d * 110)); sh.adj.push({ to: q.id, len }); q.adj.push({ to: n, len }); });
+  sh.dist = Math.min(...sh.adj.map(e => S[e.to].dist + e.len)); S.push(sh);
+  return { sites: S, D, east: n, hasPit: S.some(q => q.feat === 'pit') };
+}
+
+/* ---------- seeded noise ---------- */
+function hash2(ix, iy, s) { let h = Math.imul(ix, 374761393) ^ Math.imul(iy, 668265263) ^ Math.imul(s, 2147483647); h = Math.imul(h ^ h >>> 13, 1274126177); return ((h ^ h >>> 16) >>> 0) / 4294967296; }
+function vnoise(x, y, s) { const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy, u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy); const a = hash2(ix, iy, s), b = hash2(ix + 1, iy, s), c = hash2(ix, iy + 1, s), d = hash2(ix + 1, iy + 1, s); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+function fbm(x, y, s) { return (vnoise(x, y, s) + .5 * vnoise(x * 2.1, y * 2.1, s + 7) + .25 * vnoise(x * 4.3, y * 4.3, s + 13)) / 1.75 - .5; }
+
+/* ---------- state ---------- */
+const PAPER = {
+  slate: { paper: [27, 37, 41], sea: [19, 27, 31], ink: [217, 208, 188], wash: .17, lane: '#cfa650' },
+  vellum: { paper: [219, 207, 178], sea: [190, 196, 180], ink: [58, 44, 32], wash: .30, lane: '#8a4a1c' }
+};
+const GHOSTS = ['#62b0a3', '#d0603f'];
+let seed = 20261111, MAP, fog = true, ghost = true, paper = 'vellum', base = null, V = null, hover = -1, K = null;
+const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const rgba = (c, a) => 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')';
+
+/* what the demo pretends the Archive knows: the active lane's ground, and two other lanes */
+function knowledge() {
+  const S = MAP.sites, by = S.filter(s => !s.shore).sort((a, b) => a.dist - b.dist), own = {}, known = {}, vis = {};
+  by.slice(0, 5).forEach(s => { own[s.id] = 1 + Math.floor(hash2(s.id, 3, seed) * 7); });
+  const walk = (k) => { const set = { 0: 1 }; let cur = S[0]; for (let i = 0; i < 3; i++) { const nx = cur.adj.map(e => S[e.to]).filter(q => !q.shore && !set[q.id]).sort((a, b) => hash2(a.id, k, seed) - hash2(b.id, k, seed))[0]; if (!nx) break; set[nx.id] = 1; cur = nx; } return set; };
+  const g = [walk(11), walk(29)];
+  for (const s of S) if (!fog || own[s.id] || g.some(q => q[s.id])) known[s.id] = 1;
+  for (const s of S) if (known[s.id] || s.adj.some(e => known[e.to])) vis[s.id] = 1;
+  return { own, known, vis, g };
+}
+
+function halo(c, P, x, y, w, h, u) { c.save(); c.shadowColor = rgba(P.paper, .95); c.shadowBlur = u * 3; c.fillStyle = rgba(P.paper, .6); const i = u * 1.2; for (let k = 0; k < 2; k++) c.fillRect(x + i, y + i, Math.max(1, w - 2 * i), Math.max(1, h - 2 * i)); c.restore(); }
+/* ---------- geography first: height and wetness fields, then each site reads its ground off them ---------- */
+let GEO = null;
+function geography() {
+  const S = MAP.sites, strand = S[MAP.east], real = S.filter(s => !s.shore);
+  const cx = y => { const t = Math.min(1, Math.abs(y - strand.y) / .5); return strand.x + .05 + .7 * t * t * (3 - 2 * t) + .08 * fbm(3.1, y * 2.3, seed + 21); }; // a bay: the sea comes in at the Strand, headlands close it to north and south
+  const sea = (x, y) => x - cx(y) + .11 * fbm(x * 4.6 + 1, y * 4.6, seed + 22) + .04 * fbm(x * 13, y * 13 + 4, seed + 23); // above zero is water; the noise makes coves, spits and the odd island
+  const sand = (x, y) => { const d = Math.hypot(x - strand.x, (y - strand.y) * .8) + .05 * fbm(x * 6, y * 6, seed + 24); return d < .15 ? 1 : d > .27 ? 0 : 1 - (d - .15) / .12; }; // the Strand's beach pushes everything else back
+  const elev = (x, y) => { let d = Math.hypot(x - strand.x, y - strand.y) * .55; for (const s of real) { const q = Math.hypot(x - s.x, y - s.y); if (q < d) d = q; } return -.22 * x + .6 * fbm(x * 1.7 + 3, y * 1.7, seed + 31) + Math.max(0, d - .2) * 2.2; }; // falls toward the sea, rises at the rim
+  const moist = (x, y) => fbm(x * 2.3 + 17, y * 2.3 + 5, seed + 41);
+  const e = real.map(s => elev(s.x, s.y)).sort((p, q) => q - p), tPeak = (e[2] + e[3]) / 2, tHill = (e[6] + e[7]) / 2;
+  const m = real.filter(s => elev(s.x, s.y) <= tHill).map(s => moist(s.x, s.y)).sort((p, q) => q - p), tMarsh = (m[1] + m[2]) / 2, tForest = (m[6] + m[7]) / 2;
+  const cls = (x, y) => { if (sea(x, y) > -.03 || sand(x, y) > .45) return 'shore'; const h = elev(x, y); if (h > tPeak) return 'peak'; if (h > tHill) return 'hills'; const w = moist(x, y); return w > tMarsh ? 'marsh' : w > tForest ? 'forest' : 'plain'; };
+  for (const s of real) s.ter = cls(s.x, s.y);
+  real.filter(s => s.id && (s.ter === 'plain' || s.ter === 'forest')).sort((p, q) => hash2(p.id, 77, seed) - hash2(q.id, 77, seed)).slice(0, 3).forEach(s => { s.ruin = 1; s.ter = 'ruins'; }); // ruins are something built, laid over whatever ground is there
+  // rivers run downhill from the two highest sites to the sea
+  const rivers = [], src = real.slice().sort((p, q) => elev(q.x, q.y) - elev(p.x, p.y)); const starts = [src[0]]; for (const q of src) if (starts.length < 3 && starts.every(p => Math.hypot(p.x - q.x, p.y - q.y) > .45)) starts.push(q);
+  const wet = new Uint8Array(4096 * 4); // grid cells that already carry a river
+  // each river takes the cheapest way down to the sea over a coarse grid of the heights, so it follows the low ground and always arrives
+  let bx0 = 9, bx1 = -9, by0 = 9, by1 = -9; for (const s of S) { bx0 = Math.min(bx0, s.x); bx1 = Math.max(bx1, s.x); by0 = Math.min(by0, s.y); by1 = Math.max(by1, s.y); }
+  bx0 -= .35; by0 -= .3; by1 += .3; bx1 += .25; const cs = .03, nx = Math.ceil((bx1 - bx0) / cs), ny = Math.ceil((by1 - by0) / cs), E = new Float32Array(nx * ny); let eMin = 9;
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) { const v = elev(bx0 + i * cs, by0 + j * cs); E[j * nx + i] = v; if (v < eMin) eMin = v; }
+  for (const st of starts) { const si = Math.round((st.x + .05 - bx0) / cs), sj = Math.round((st.y + .04 - by0) / cs), dist = new Float32Array(nx * ny).fill(1e9), prev = new Int32Array(nx * ny).fill(-1), done = new Uint8Array(nx * ny); dist[sj * nx + si] = 0; let end = -1;
+    for (let it = 0; it < nx * ny; it++) { let k = -1, bd = 1e9; for (let q = 0; q < nx * ny; q++) if (!done[q] && dist[q] < bd) { bd = dist[q]; k = q; } if (k < 0) break; done[k] = 1; const i = k % nx, j = (k / nx) | 0; if (sea(bx0 + i * cs, by0 + j * cs) > .04 || wet[k]) { end = k; break; }
+      for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { if (!a && !b) continue; const i2 = i + a, j2 = j + b; if (i2 < 0 || j2 < 0 || i2 >= nx || j2 >= ny) continue; const q = j2 * nx + i2, w = Math.hypot(a, b) * Math.pow(.08 + E[q] - eMin, 2) * (1 + .5 * hash2(i2, j2, seed + 61)); if (dist[k] + w < dist[q]) { dist[q] = dist[k] + w; prev[q] = k; } } }
+    if (end < 0) continue; const joins = wet[end]; for (let k = end; k >= 0; k = prev[k]) wet[k] = 1; let pts = []; for (let k = end; k >= 0; k = prev[k]) { const i = k % nx, j = (k / nx) | 0; pts.unshift([bx0 + (i + (hash2(i, j, seed + 71) - .5) * .9) * cs, by0 + (j + (hash2(i, j, seed + 72) - .5) * .9) * cs]); }
+    pts = pts.filter((p, i) => i % 3 === 0 || i === pts.length - 1); // keep every third point, so the grid's angles do not show
+    for (let r = 0; r < 3; r++) { const o = [pts[0]]; for (let i = 0; i + 1 < pts.length; i++) { const p = pts[i], q = pts[i + 1]; o.push([p[0] * .75 + q[0] * .25, p[1] * .75 + q[1] * .25], [p[0] * .25 + q[0] * .75, p[1] * .25 + q[1] * .75]); } o.push(pts[pts.length - 1]); pts = o; } // round the corners off
+    if (joins) { let best = null, bd = 9; const e = pts[pts.length - 1]; for (const r of rivers) for (const p of r) { const d = Math.hypot(p[0] - e[0], p[1] - e[1]); if (d < bd) { bd = d; best = p; } } if (best) pts.push([best[0], best[1]]); } // a tributary ends exactly on the river it meets
+    rivers.push(pts); }
+  GEO = { cx, sea, sand, elev, moist, tPeak, tHill, tMarsh, tForest, cls, rivers };
+}
+
+/* ---------- the base sheet: drawn once per valley, per paper, per state of knowledge ---------- */
+function drawBase() {
+  const cv = document.getElementById('cv'), cssW = cv.clientWidth, cssH = Math.round(Math.min(720, cssW * .6)), dpr = Math.min(1.5, window.devicePixelRatio || 1), W = Math.round(cssW * dpr), H = Math.round(cssH * dpr);
+  cv.width = W; cv.height = H; cv.style.height = cssH + 'px';
+  const S = MAP.sites, P = PAPER[paper]; K = knowledge();
+  let x0 = 9, x1 = -9, y0 = 9, y1 = -9; for (const s of S) { x0 = Math.min(x0, s.x); x1 = Math.max(x1, s.x); y0 = Math.min(y0, s.y); y1 = Math.max(y1, s.y); }
+  x0 -= .22; x1 += .85; y0 -= .2; y1 += .24;
+  const sc = Math.min(W / (x1 - x0), H / (y1 - y0)), ox = (W - sc * (x1 - x0)) / 2 - x0 * sc, oy = (H - sc * (y1 - y0)) / 2 - y0 * sc; // fit everything; the ground is defined everywhere, so the sheet is always full
+  V = { W, H, sc, ox, oy, dpr, X: x => x * sc + ox, Y: y => y * sc + oy };
+  const off = document.createElement('canvas'); off.width = W; off.height = H; const c = off.getContext('2d'), img = c.createImageData(W, H), D = img.data;
+  const strand = S[MAP.east], Gq = GEO, col = k => hex(TER[k].c), cP = col('plain'), cF = col('forest'), cM = col('marsh'), cH = col('hills'), cK = col('peak'), cS = [214, 170, 120];
+  const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  // fields at half resolution: distance to the coast, height, wetness, and how well surveyed the spot is
+  const hw = (W >> 1) + 2, hh = (H >> 1) + 2, fL = new Float32Array(hw * hh), fE = new Float32Array(hw * hh), fM = new Float32Array(hw * hh), fV = new Float32Array(hw * hh), fS = new Float32Array(hw * hh);
+  const lit = []; for (const s of S) { if (K.known[s.id]) lit.push([s.x, s.y, s.x, s.y, .3]); else if (K.vis[s.id]) lit.push([s.x, s.y, s.x, s.y, .1]); for (const e of s.adj) if (e.to > s.id && K.known[s.id] && K.known[e.to]) lit.push([s.x, s.y, S[e.to].x, S[e.to].y, .15]); }
+  for (let qy = 0; qy < hh; qy++) for (let qx = 0; qx < hw; qx++) { const mx = (qx * 2 - ox) / sc, my = (qy * 2 - oy) / sc, k = qy * hw + qx;
+    fL[k] = Gq.sea(mx, my); fS[k] = Gq.sand(mx, my); fE[k] = Gq.elev(mx, my); fM[k] = Gq.moist(mx, my);
+    let v = fog ? 0 : 1; if (fog) { const wob = .07 * fbm(mx * 5 + 2, my * 5, seed + 51); for (const q of lit) { const dx = q[2] - q[0], dy = q[3] - q[1], dd = dx * dx + dy * dy, t = dd ? Math.max(0, Math.min(1, ((mx - q[0]) * dx + (my - q[1]) * dy) / dd)) : 0, d = Math.hypot(mx - q[0] - dx * t, my - q[1] - dy * t) + wob, a = 1 - sm(q[4] - .06, q[4] + .06, d); if (a > v) v = a; } }
+    fV[k] = v; }
+  const bil = (f, px, py) => { const qx = px >> 1, qy = py >> 1, fx = (px & 1) * .5, fy = (py & 1) * .5, k = qy * hw + qx; return (f[k] * (1 - fx) + f[k + 1] * fx) * (1 - fy) + (f[k + hw] * (1 - fx) + f[k + hw + 1] * fx) * fy; };
+  const land = new Float32Array(W * H), vis = new Float32Array(W * H);
+  for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
+    const i = py * W + px, L = bil(fL, px, py), g = (hash2(px, py, seed) - .5) * 5; land[i] = L; vis[i] = bil(fV, px, py); let r, gg, b;
+    if (L < 0) { const e = bil(fE, px, py), m = bil(fM, px, py);
+      let t = [cP[0], cP[1], cP[2]]; const mix = (cc, a) => { t[0] += (cc[0] - t[0]) * a; t[1] += (cc[1] - t[1]) * a; t[2] += (cc[2] - t[2]) * a; };
+      mix(cF, sm(Gq.tForest - .03, Gq.tForest + .03, m)); mix(cM, sm(Gq.tMarsh - .03, Gq.tMarsh + .03, m)); mix(cH, sm(Gq.tHill - .04, Gq.tHill + .04, e)); mix(cK, sm(Gq.tPeak - .05, Gq.tPeak + .05, e)); mix(cS, Math.max(sm(-.07, -.015, L), bil(fS, px, py)));
+      const a = P.wash * (.8 + .4 * vnoise(px / 26, py / 26, seed + 5)); r = P.paper[0] + (t[0] - P.paper[0]) * a + g; gg = P.paper[1] + (t[1] - P.paper[1]) * a + g; b = P.paper[2] + (t[2] - P.paper[2]) * a + g;
+      if (L > -.008) { r += (P.ink[0] - r) * .85; gg += (P.ink[1] - gg) * .85; b += (P.ink[2] - b) * .85; }
+    } else { r = P.sea[0] + g; gg = P.sea[1] + g; b = P.sea[2] + g; const band = L * sc / dpr; if (band < 30 && Math.floor(band) % 7 === 3) { const k = .32 * (1 - band / 30); r += (P.ink[0] - r) * k; gg += (P.ink[1] - gg) * k; b += (P.ink[2] - b) * k; } }
+    const q = i * 4; D[q] = r; D[q + 1] = gg; D[q + 2] = b; D[q + 3] = 255;
+  }
+  c.putImageData(img, 0, 0);
+  const u = Math.min(W / 2.9, H / 1.75) * .011, ink = a => rgba(P.ink, a), R = rng(seed ^ 0x5bd1e995); V.u = u;
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  // rivers: inked banks on land, open water running straight out into the sea
+  for (const pass of [0, 1]) for (const pts of Gq.rivers) { const n = pts.length, wAt = i => u * (.3 + .9 * i / n);
+    for (let i = 0; i + 1 < n; i += 6) { const j = Math.min(n - 1, i + 7), sea = Gq.sea(pts[Math.min(n - 1, i + 3)][0], pts[Math.min(n - 1, i + 3)][1]) > -.004; if (!pass && sea) continue;
+      c.beginPath(); for (let k = i; k <= j; k++) { const x = V.X(pts[k][0]), y = V.Y(pts[k][1]); if (k === i) c.moveTo(x, y); else c.lineTo(x, y); } c.lineWidth = wAt(i) + (pass ? 0 : u * .7); c.strokeStyle = pass ? rgba(P.sea, 1) : ink(.6); c.stroke(); } }
+  // terrain signs, scattered by what the ground actually is at each spot
+  const G = {
+    forest(x, y, s) { c.beginPath(); c.arc(x, y - 3 * s, 2.6 * s, Math.PI * .9, Math.PI * 2.1); c.arc(x + 1.6 * s, y - 1.4 * s, 2 * s, -1.2, 1.5); c.arc(x - 1.6 * s, y - 1.2 * s, 2 * s, 1.6, 4.3); c.fillStyle = rgba(P.paper, .9); c.fill(); c.stroke(); c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + 2.6 * s); c.stroke(); },
+    hills(x, y, s) { c.beginPath(); c.moveTo(x - 5 * s, y); c.quadraticCurveTo(x, y - 6 * s, x + 5 * s, y); c.stroke(); for (let i = 0; i < 3; i++) { c.beginPath(); c.moveTo(x + (1 + i * 1.4) * s, y - (2.6 - i * .9) * s); c.lineTo(x + (2.2 + i * 1.4) * s, y - .3 * s); c.stroke(); } },
+    peak(x, y, s) { c.beginPath(); c.moveTo(x - 6 * s, y); c.lineTo(x - .5 * s, y - 10 * s); c.lineTo(x + 1.5 * s, y - 6.5 * s); c.lineTo(x + 3 * s, y - 8 * s); c.lineTo(x + 7 * s, y); c.fillStyle = rgba(P.paper, .9); c.fill(); c.stroke(); for (let i = 0; i < 4; i++) { c.beginPath(); c.moveTo(x + (.2 + i * .9) * s, y - (8.2 - i * 1.7) * s); c.lineTo(x + (1.6 + i * 1.1) * s, y - .6 * s); c.stroke(); } },
+    plain(x, y, s) { for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(x + i * 1.6 * s, y); c.lineTo(x + i * 2.6 * s, y - 3.2 * s); c.stroke(); } },
+    marsh(x, y, s) { c.beginPath(); c.moveTo(x - 4 * s, y); c.lineTo(x + 4 * s, y); c.stroke(); for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(x + i * 1.8 * s, y); c.lineTo(x + i * 2.2 * s, y - (3 - Math.abs(i)) * s); c.stroke(); } },
+    ruins(x, y, s) { c.beginPath(); c.moveTo(x - 3 * s, y); c.lineTo(x - 3 * s, y - 6 * s); c.moveTo(x, y); c.lineTo(x, y - 4 * s); c.moveTo(x + 3 * s, y); c.lineTo(x + 3 * s, y - 2.2 * s); c.moveTo(x - 3.8 * s, y - 6 * s); c.lineTo(x + .8 * s, y - 6 * s); c.moveTo(x - 4.5 * s, y); c.lineTo(x + 5 * s, y); c.stroke(); },
+    shore(x, y, s) { c.beginPath(); c.arc(x, y, .5 * s, 0, 7); c.arc(x + 2.5 * s, y + s, .5 * s, 0, 7); c.fillStyle = ink(.6); c.fill(); }
+  };
+  const gap = { forest: .026, hills: .042, peak: .06, plain: .042, marsh: .04, shore: .045 }, marks = [], cell = new Map(), key = (x, y) => Math.floor(x / .06) + ',' + Math.floor(y / .06);
+  const mx0 = (0 - ox) / sc, mx1 = (W - ox) / sc, my0 = (0 - oy) / sc, my1 = (H - oy) / sc;
+  for (let t = 0; t < 9000; t++) { const mx = mx0 + R() * (mx1 - mx0), my = my0 + R() * (my1 - my0), ter = Gq.cls(mx, my); if (Gq.sea(mx, my) > -.012) continue; if (ter === 'plain' && R() < .45) continue;
+    if (S.some(q => Math.hypot(q.x - mx, q.y - my - .012) < .05)) continue;
+    let near = false; for (const q of S) { for (const e of q.adj) if (e.to > q.id) { const o = S[e.to], dx = o.x - q.x, dy = o.y - q.y, tt = Math.max(0, Math.min(1, ((mx - q.x) * dx + (my - q.y) * dy) / (dx * dx + dy * dy))); if (Math.hypot(mx - q.x - dx * tt, my - q.y - dy * tt) < .02) { near = true; break; } } if (near) break; } if (near) continue;
+    const gx = Math.floor(mx / .06), gy = Math.floor(my / .06); let clash = false; for (let a = -1; a <= 1 && !clash; a++) for (let b = -1; b <= 1 && !clash; b++) for (const m of cell.get((gx + a) + ',' + (gy + b)) || []) if (Math.hypot(m[0] - mx, m[1] - my) < Math.max(gap[ter], gap[m[2]]) ) { clash = true; break; } if (clash) continue;
+    const m = [mx, my, ter, .8 + R() * .5]; marks.push(m); const kk = key(mx, my); if (!cell.has(kk)) cell.set(kk, []); cell.get(kk).push(m); }
+  for (const s of S) if (s.ruin) for (let i = 0; i < 4; i++) marks.push([s.x + (R() - .5) * .16, s.y + (i < 2 ? -.06 : .075) + (R() - .5) * .03, 'ruins', 1 + R() * .3]);
+  marks.sort((a, b) => a[1] - b[1]); c.lineWidth = Math.max(1, u * .5); c.strokeStyle = ink(.62);
+  for (const [mx, my, ter, sz] of marks) G[ter](V.X(mx), V.Y(my), u * sz * .5);
+  // roads
+  c.font = 'italic ' + Math.round(u * 3.3) + 'px "IM Fell English", Georgia, serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  for (const s of S) for (const e of s.adj) { if (e.to < s.id) continue; const o = S[e.to], both = K.known[s.id] && K.known[o.id];
+    const xa = V.X(s.x), ya = V.Y(s.y), xb = V.X(o.x), yb = V.Y(o.y), nx = -(yb - ya), ny = xb - xa, nl = Math.hypot(nx, ny), w = (hash2(s.id, o.id, seed) - .5) * .16, cx2 = (xa + xb) / 2 + nx * w, cy2 = (ya + yb) / 2 + ny * w;
+    c.setLineDash([u * 1.9, u * 1.5]); c.lineWidth = u * .5; c.strokeStyle = ink(.9); c.beginPath(); c.moveTo(xa, ya); c.quadraticCurveTo(cx2, cy2, xb, yb); c.stroke(); c.setLineDash([]);
+    if (both || !fog) { const lx = (xa + xb) / 2 + nx * w * .5 + nx / nl * u * 3, ly = (ya + yb) / 2 + ny * w * .5 + ny / nl * u * 3; halo(c, P, lx - u * 3.4, ly - u * 2.6, u * 6.8, u * 5.2, u); c.fillStyle = ink(.85); c.fillText(e.len, lx, ly); } }
+  // the unsurveyed: everything drawn so far fades back to bare paper, with a soft uneven edge
+  if (fog) { const im = c.getImageData(0, 0, W, H), d = im.data; for (let i = 0; i < W * H; i++) { const v = vis[i]; if (v >= .999) continue; const q = i * 4, g = (hash2(i % W, (i / W) | 0, seed) - .5) * 5; d[q] = P.paper[0] + g + (d[q] - P.paper[0] - g) * v; d[q + 1] = P.paper[1] + g + (d[q + 1] - P.paper[1] - g) * v; d[q + 2] = P.paper[2] + g + (d[q + 2] - P.paper[2] - g) * v; } c.putImageData(im, 0, 0); }
+  // furniture: a name for the sea, a rose, a scale, and one thing that should not be there
+  c.fillStyle = ink(.5); c.font = 'italic ' + Math.round(u * 5) + 'px "IM Fell English", Georgia, serif';
+  c.save(); c.translate(W - u * 11, H / 2); c.rotate(-Math.PI / 2); c.fillText('T H E   A S H E N   S E A', 0, 0); c.restore();
+  const rx = u * 15, ry = H - u * 17; c.fillStyle = rgba(P.paper, .7); c.beginPath(); c.arc(rx, ry, u * 9, 0, 7); c.fill(); c.strokeStyle = ink(.6); c.lineWidth = u * .5; for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, l = i % 2 ? u * 3.5 : u * 7; c.beginPath(); c.moveTo(rx, ry); c.lineTo(rx + Math.sin(a) * l, ry - Math.cos(a) * l); c.lineTo(rx + Math.sin(a + .35) * l * .35, ry - Math.cos(a + .35) * l * .35); c.closePath(); c.stroke(); } c.font = Math.round(u * 4) + 'px "IM Fell English SC", Georgia, serif'; c.fillStyle = ink(.7); c.fillText('N', rx, ry - u * 9.5);
+  const bar = 50 / 110 * sc, bx = u * 28, byy = H - u * 11; halo(c, P, bx - u * 3, byy - u * 5, bar + u * 6, u * 12, u); c.strokeStyle = ink(.7); c.lineWidth = u * .6; c.beginPath(); c.moveTo(bx, byy - u * 2); c.lineTo(bx, byy); c.lineTo(bx + bar, byy); c.lineTo(bx + bar, byy - u * 2); c.moveTo(bx + bar / 2, byy); c.lineTo(bx + bar / 2, byy - u * 1.4); c.stroke(); c.fillStyle = ink(.7); c.font = 'italic ' + Math.round(u * 3.4) + 'px "IM Fell English", Georgia, serif'; c.fillText('fifty years’ walk', bx + bar / 2, byy + u * 3.4);
+  for (let t = 0; t < 400; t++) { const mx = mx1 - .06 - R() * .2, my = my0 + .15 + R() * (my1 - my0 - .3); if (Gq.sea(mx, my) > .1 && Math.abs(my - strand.y) > .12 && Math.abs(V.Y(my) - H / 2) > u * 40) { const x = V.X(mx), y = V.Y(my); c.strokeStyle = ink(.5); c.lineWidth = u * .6; for (let i = 0; i < 3; i++) { c.beginPath(); c.arc(x + i * u * 5.5, y, u * (2.4 - i * .5), Math.PI, 0); c.stroke(); } c.beginPath(); c.moveTo(x - u * 2.4, y); c.quadraticCurveTo(x - u * 5, y - u * 4, x - u * 6.5, y - u * 2.2); c.stroke(); break; } }
+  c.strokeStyle = ink(.5); c.lineWidth = u * .5; c.strokeRect(u * 3, u * 3, W - u * 6, H - u * 6); c.lineWidth = u * 1.1; c.strokeRect(u * 5, u * 5, W - u * 10, H - u * 10);
+  c.textAlign = 'left'; const tw = u * 62; halo(c, P, u * 6, u * 6, tw, u * 16, u); c.fillStyle = ink(.85); c.font = Math.round(u * 6.5) + 'px "IM Fell English SC", Georgia, serif'; c.fillText('The Valley', u * 9, u * 12); c.font = 'italic ' + Math.round(u * 3.6) + 'px "IM Fell English", Georgia, serif'; c.fillStyle = ink(.6); c.fillText('as far as any lane has walked it', u * 9, u * 17);
+  base = off;
+}
+
+/* ---------- the live layer: sites, the lane's holdings, other lanes showing through ---------- */
+function draw() {
+  if (!base) return; const cv = document.getElementById('cv'), c = cv.getContext('2d'), P = PAPER[paper], S = MAP.sites, u = V.u, ink = a => rgba(P.ink, a);
+  c.drawImage(base, 0, 0); c.lineCap = 'round'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  if (ghost) K.g.forEach((set, gi) => { c.strokeStyle = GHOSTS[gi]; c.globalAlpha = .55; c.lineWidth = u * .45; for (const id in set) { if (+id === 0) continue; const s = S[id], g = u * .6, x = V.X(s.x) + (gi ? 1 : -1) * u * 4.6, y = V.Y(s.y) - u * 3.8; c.beginPath(); c.moveTo(x - g * 2.4, y + g * 2); c.lineTo(x - g * 2.4, y - g); c.lineTo(x, y - g * 3); c.lineTo(x + g * 2.4, y - g); c.lineTo(x + g * 2.4, y + g * 2); c.closePath(); c.stroke(); for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(x - g * 3.4, y + i * g * 1.5 + g * .8); c.lineTo(x + g * 3.4, y + i * g * 1.5 - g * .8); c.stroke(); } } c.globalAlpha = 1; });
+  for (const s of S) { if (!K.vis[s.id]) continue; const x = V.X(s.x), y = V.Y(s.y), R = u * (s.id ? 2.7 : 3.3), own = K.own[s.id], col = TER[s.ter].c;
+    if (s.shore) { c.setLineDash([u * 1.4, u * 1.4]); c.lineWidth = u * .8; c.strokeStyle = '#d0603f'; c.beginPath(); c.arc(x, y, R * .8, 0, 7); c.stroke(); c.setLineDash([]); }
+    else { c.beginPath(); c.arc(x, y, R, 0, 7); c.fillStyle = own ? col : rgba(P.paper, 1); c.fill(); c.lineWidth = u * (own ? .8 : .5); c.strokeStyle = own ? P.lane : ink(.9); c.stroke();
+      if (!s.id) { c.beginPath(); c.arc(x, y, R + u * 1.2, 0, 7); c.lineWidth = u * .4; c.stroke(); }
+      c.font = '500 ' + Math.round(u * 3.4) + 'px "Alegreya Sans", sans-serif'; c.fillStyle = own ? '#10171a' : ink(.75); c.fillText(own ? own : K.known[s.id] ? '' : '?', x, y + u * .3); }
+    if (s.id === hover) { c.beginPath(); c.arc(x, y, R + u * 2.2, 0, 7); c.lineWidth = u * .5; c.strokeStyle = P.lane; c.stroke(); }
+    const nm = s.shore ? 'The Ashen Strand' : s.name; c.font = (s.id ? 'italic ' : '') + Math.round(u * (s.id ? 3.7 : 4.4)) + 'px ' + (s.id ? '"IM Fell English"' : '"IM Fell English SC"') + ', Georgia, serif';
+    const w = c.measureText(nm).width, ly = y + R + u * 3.1; halo(c, P, x - w / 2 - u * 2, ly - u * 2.8, w + u * 4, u * 5.6, u); c.fillStyle = s.shore ? '#d0603f' : ink(.95); c.fillText(nm, x, ly); }
+}
+function redraw() { drawBase(); draw(); }
+function setSeed() { MAP = makeMap(seed); geography(); hover = -1; redraw(); document.getElementById('info').innerHTML = 'Valley ' + seed + '. ' + (MAP.sites.length - 1) + ' sites and the Strand.'; }
+const cv = document.getElementById('cv');
+cv.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * V.dpr, y = (e.clientY - r.top) * V.dpr; let best = -1, bd = V.u * 7; for (const s of MAP.sites) { if (!K.vis[s.id]) continue; const d = Math.hypot(V.X(s.x) - x, V.Y(s.y) - y); if (d < bd) { bd = d; best = s.id; } }
+  if (best !== hover) { hover = best; draw(); const s = MAP.sites[best]; document.getElementById('info').innerHTML = !s ? '' : '<b>' + (s.shore ? 'The Ashen Strand' : s.name) + '</b>' + (s.ruin ? 'Ruins' : TER[s.ter].n) + (s.shore ? '. Nothing can be built here.' : ' · ' + s.dist + ' years from home' + (K.own[s.id] ? ' · ' + K.own[s.id] + ' plots built in this lane' : K.known[s.id] ? ' · walked by another lane' : ' · nobody has lived here')); } });
+const tog = (id, fn) => document.getElementById(id).addEventListener('click', e => { const b = e.currentTarget, on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); fn(on); });
+document.getElementById('bSeed').addEventListener('click', () => { seed = 1 + Math.floor(Math.random() * 1e9); setSeed(); });
+tog('bFog', on => { fog = on; redraw(); }); tog('bGhost', on => { ghost = on; draw(); }); tog('bPaper', on => { paper = on ? 'vellum' : 'slate'; redraw(); });
+let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redraw, 150); });
+setSeed(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(redraw);
+</script>
+</body>
+</html>

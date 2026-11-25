@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Errata at the End of Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* One world, one theme: an archive at the end of time. Slate and lamplight.
+     Layout: the river of lanes spans the top and carries all the color; three quiet columns below it. */
+  --ink:#0f1518; --slate:#172026; --slate2:#1d2930; --line:#2a363d;
+  --bone:#e7e0cf; --dim:#8d9a9c; --brass:#cfa650; --lamp:#f0d898; --verd:#62b0a3; --ember:#d0603f;
+  --display:"IM Fell English SC","IM Fell English",Georgia,serif;
+  --serif:"IM Fell English",Georgia,serif;
+  --body:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--bone);font:15px/1.35 var(--body)}
+body{padding:0 16px 40px;max-width:1500px;margin:0 auto}
+button{font:inherit;color:inherit;background:var(--slate2);border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:4px 10px}
+button:hover:not(:disabled){border-color:var(--brass)}
+button:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid var(--lamp);outline-offset:1px}
+button:disabled{opacity:.35;cursor:default}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
+h3{font-size:15px;letter-spacing:.06em;color:var(--brass);margin:14px 0 6px;display:flex;gap:8px;align-items:baseline}
+h3 .dim{font:13px var(--body);letter-spacing:0}
+.dim{color:var(--dim)} .bad{color:var(--ember)} .num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+small{color:var(--dim);font-size:13px}
+
+#top{display:flex;align-items:center;gap:14px;padding:14px 0 10px;flex-wrap:wrap}
+#glass{border:none;background:none;padding:2px;line-height:0}
+#glass svg{width:26px;height:34px}
+#glass.tilt svg{animation:tilt .35s ease}
+@keyframes tilt{40%{transform:rotate(24deg)}100%{transform:rotate(0)}}
+h1{font-size:24px;letter-spacing:.04em;margin-right:auto}
+#hz{font-variant-numeric:tabular-nums;display:flex;gap:10px;align-items:baseline}
+#hz b{font:400 20px var(--display);color:var(--lamp)} #hz span{color:var(--verd)}
+#bArchive span{color:var(--lamp);margin-left:6px;font-variant-numeric:tabular-nums}
+
+#river{display:grid;grid-template-columns:168px 1fr;border:1px solid var(--line);border-radius:6px;background:var(--slate);overflow:hidden}
+#lanes{padding-top:0;border-right:1px solid var(--line)}
+.lhead{height:40px;display:flex;align-items:flex-end;padding:0 10px 6px;color:var(--dim);font-size:13px}
+.lane{height:46px;padding:5px 8px 0 12px;position:relative;cursor:pointer;border-left:3px solid transparent;overflow:hidden}
+.lane.on{border-left-color:var(--h);background:var(--slate2)}
+.lane b{display:block;font:400 16px/1.1 var(--serif);color:var(--h);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:44px}
+.lane small{display:block;white-space:nowrap;font-size:12px}
+.lane .lt{position:absolute;right:4px;top:4px;display:none;gap:2px}
+.lane:hover .lt,.lane.on .lt{display:flex}
+.lane .lt button{padding:0 5px;font-size:12px;background:var(--ink)} .lane .lt .ask{color:var(--ember);border-color:var(--ember)}
+.lane input{width:100%;font:16px var(--serif);background:var(--ink);color:var(--bone);border:1px solid var(--brass);border-radius:3px;padding:3px 5px;margin-top:3px}
+#cv{display:block;width:100%;cursor:ew-resize;touch-action:none}
+
+#bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 0 4px}
+#curY{min-width:210px;display:flex;gap:10px;align-items:baseline;font-variant-numeric:tabular-nums}
+#curY b{font:400 20px var(--display)} #curY span{color:var(--dim);font-size:13px}
+#bar .sp{flex:1}
+#bFollow.on{border-color:var(--lamp);color:var(--lamp)}
+#hint{min-height:22px;color:var(--verd);font:italic 16px var(--serif);padding:2px 0 6px;max-width:95ch}
+
+main{display:grid;grid-template-columns:minmax(280px,1fr) minmax(300px,1.25fr) minmax(280px,1fr);gap:16px;align-items:start}
+main>section{background:var(--slate);border:1px solid var(--line);border-radius:6px;padding:12px 14px 14px;min-width:0}
+.civ h2{font-size:22px} .civ p{margin:2px 0 8px;color:var(--dim)}
+.people{display:flex;gap:6px;align-items:baseline;margin-bottom:6px} .people b{font:400 22px var(--display)} .people .g{margin-left:auto;color:var(--dim);font-size:13px}
+.clim{color:var(--ember);font-size:14px;margin-bottom:6px}
+.fallen{border-left:3px solid var(--ember);padding:6px 10px;background:var(--ink);color:var(--dim);margin-bottom:8px} .fallen b{display:block;color:var(--ember);font:400 17px var(--serif)}
+table{width:100%;border-collapse:collapse} td{padding:3px 4px;border-top:1px solid var(--line);vertical-align:middle}
+.res td:first-child{white-space:nowrap} .res i,.c i,.sum i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px}
+.res .rate{color:var(--verd);width:64px} .res .note{color:var(--dim);font-size:13px;text-align:right}
+.res tr.warn td{color:var(--ember)} .res tr.warn .note{color:var(--ember)}
+.jobs small{display:block;font-size:12px;line-height:1.1} .jobs .ud{width:44px;white-space:nowrap} .jobs .ud button{padding:0 4px;font-size:10px;line-height:16px}
+.jobs .lim{white-space:nowrap;text-align:right} .jobs .lim button{padding:0 7px} .jobs .lim span{display:inline-block;min-width:26px;text-align:center;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px} .grid.one{grid-template-columns:1fr}
+.w{text-align:left;padding:6px 9px;display:flex;flex-direction:column;gap:2px}
+.w b{font-weight:500;display:flex;justify-content:space-between;gap:8px} .w .n{color:var(--dim);font-weight:400;font-variant-numeric:tabular-nums}
+.w small{font-size:12px;line-height:1.2}
+.w.short{background:var(--slate);border-style:dashed} .w.short b{color:var(--dim)}
+.w.creed{border-color:var(--brass)} .w.reg{border-color:var(--lamp);background:#2a2717}
+.cost{display:flex;gap:10px;flex-wrap:wrap;font-variant-numeric:tabular-nums;font-size:14px} .c.no{color:var(--ember)} .c i{margin-right:4px}
+.proj{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin-bottom:6px} .proj div{grid-column:1/3;height:4px;background:var(--ink);border-radius:2px} .proj i{display:block;height:100%;background:var(--verd);border-radius:2px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin:0} .tags span{border:1px solid var(--line);border-radius:10px;padding:0 8px;font-size:13px;color:var(--dim)}
+.orders{list-style:none;margin:0;padding:0;max-height:300px;overflow:auto}
+.orders li{display:grid;grid-template-columns:48px 1fr auto 22px;gap:6px;align-items:center;padding:2px 2px;border-top:1px solid var(--line);cursor:pointer;font-size:14px}
+.orders li:hover{background:var(--slate2)} .orders .y,.log .y{color:var(--dim);font-variant-numeric:tabular-nums;text-align:right}
+.orders .s{color:var(--verd);font-size:12px} .orders .wait .s{color:var(--brass)} .orders .void{color:var(--dim);text-decoration:line-through} .orders .void .s{color:var(--ember)}
+.orders button{padding:0;border:none;background:none;color:var(--dim);font-size:12px} .orders button:hover{color:var(--ember)}
+.orders .now{display:block;cursor:default;color:var(--lamp);font-size:12px;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--lamp);padding:1px 2px}
+.log{list-style:none;margin:0;padding:0;font:15px/1.3 var(--serif)} .log li{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:3px 2px;border-top:1px solid var(--line)}
+.log .y{font:13px var(--body);padding-top:2px} .log .omen{font-style:italic;color:var(--dim)} .log .bad,.log .fall{color:var(--ember)} .log .feat,.log .creed{color:var(--lamp)}
+
+#toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:30;max-width:min(340px,calc(100vw - 32px))}
+.toast{background:var(--slate2);border:1px solid var(--line);border-left:3px solid var(--verd);border-radius:4px;padding:8px 12px;display:flex;flex-direction:column;animation:rise .25s ease}
+.toast.echo{border-left-color:var(--lamp)} .toast b{font:400 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)} .toast span{font:18px var(--serif);color:var(--lamp)}
+@keyframes rise{from{transform:translateY(8px);opacity:.3}}
+#modal{position:fixed;inset:0;background:rgba(8,11,13,.8);z-index:40;display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
+#modal[hidden]{display:none}
+#mBox{background:var(--slate);border:1px solid var(--line);border-radius:6px;max-width:860px;width:100%;padding:22px 26px 24px;position:relative}
+#mBox h2{font-size:28px;color:var(--lamp);margin-bottom:8px} #mBox>button.x{position:absolute;right:12px;top:12px}
+.lede,.story{font:17px/1.45 var(--serif);max-width:65ch} .story p{margin:0 0 12px}
+.primary{border-color:var(--lamp);color:var(--lamp);padding:7px 18px;font:17px var(--serif)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.sum{list-style:none;padding:0;margin:0} .sum li{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:3px 0;font-variant-numeric:tabular-nums} .sum .sub{padding-left:14px;color:var(--dim)} .sum .tot{color:var(--lamp)}
+.trial{border-top:1px solid var(--line);padding:6px 0} .trial b{color:var(--ember);font-weight:500} .trial p{margin:2px 0 0}
+.echoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.echo{border:1px dashed var(--line);border-radius:4px;padding:8px 10px;color:var(--dim)} .echo b{font:400 16px var(--serif)} .echo p{margin:2px 0}
+.echo.got{border:1px solid var(--brass);color:var(--bone)} .echo.got b{color:var(--lamp)}
+.saverow{display:flex;gap:8px;flex-wrap:wrap} .saverow input{flex:1;min-width:160px;background:var(--ink);border:1px solid var(--line);color:var(--bone);border-radius:4px;padding:4px 8px;font:inherit} .danger{color:var(--ember)}
+@media (max-width:1000px){main{grid-template-columns:1fr 1fr} main>section:last-child{grid-column:1/3}}
+@media (max-width:640px){main,.cols{grid-template-columns:1fr} main>section:last-child{grid-column:auto} #river{grid-template-columns:112px 1fr} .lane small{display:none} .lane b{padding-right:0} h1{font-size:19px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header id="top">
+  <button id="glass" data-a="glass" aria-label="Hourglass" title="The Archive's hourglass"><svg viewBox="0 0 26 34" fill="none" stroke="#cfa650" stroke-width="1.5"><path d="M4 2h18M4 32h18M6 2c0 9 7 11 7 15s-7 6-7 15M20 2c0 9-7 11-7 15s7 6 7 15"/><path d="M9 29c1-3 3-4 4-4s3 1 4 4z" fill="#f0d898" stroke="none"/><path d="M13 17v7" stroke="#f0d898" stroke-dasharray="1 2"/></svg></button>
+  <h1>Errata at the End of Time</h1>
+  <div id="hz"></div>
+  <button id="bArchive" data-a="archive">Archive<span id="nEcho">0</span></button>
+</header>
+<section id="river" aria-label="The river of lanes">
+  <div id="lanes"></div>
+  <canvas id="cv" tabindex="0" aria-label="Timeline. Drag to move the cursor through the years, scroll to zoom."></canvas>
+</section>
+<nav id="bar" aria-label="Time controls">
+  <div id="curY"></div>
+  <button data-a="prev" title="Previous event in this lane (,)">⏮</button>
+  <button data-a="back" title="One year back (←, shift for ten)">◀</button>
+  <button data-a="fwd" title="One year on (→, shift for ten)">▶</button>
+  <button data-a="next" title="Next event in this lane (.)">⏭</button>
+  <button id="bFollow" data-a="follow" title="Keep the cursor on the horizon (End)">Ride the horizon</button>
+  <button id="bFit" data-a="fit" hidden>Show all years</button>
+  <span class="sp"></span>
+  <button data-a="fork" title="Copy this lane, up to the cursor, into a new lane (F)">Fork here</button>
+  <button data-a="unravel" title="Remove every order in this lane after the cursor">Unravel after cursor</button>
+  <button data-a="undo" title="Undo the last change to a lane's orders (Ctrl+Z)">Undo</button>
+</nav>
+<div id="hint" role="status"></div>
+<main>
+  <section><div id="pState"></div><div id="pJobs"></div></section>
+  <section id="pWorks"></section>
+  <section><div id="pOrders"></div><div id="pLog"></div></section>
+</main>
+<div id="toasts" aria-live="polite"></div>
+<div id="modal" hidden><div id="mBox" role="dialog" aria-modal="true"><button class="x" data-a="close" aria-label="Close">✕</button><div id="mBody"></div></div></div>
+<script>
+/* ===== Engine: exact event-driven simulation. No timestepping. =====
+   Between events every stock is a polynomial in tau = t - t0. Events are either
+   scheduled (orders, timers, climate breakpoints, trials) or found as polynomial
+   roots (a stock empties, fills, a cost becomes affordable, a throttle releases). */
+const EPS = 1e-9;
+
+/* --- polynomials: coefficient arrays, low order first --- */
+function pev(p, x) { let s = 0; for (let i = p.length - 1; i >= 0; i--) s = s * x + p[i]; return s; }
+function padd(a, b, k = 1) { const n = Math.max(a.length, b.length), o = new Array(n); for (let i = 0; i < n; i++) o[i] = (a[i] || 0) + k * (b[i] || 0); return o; }
+function pscale(a, k) { return a.map(c => c * k); }
+function pint(a, c0) { const o = [c0]; for (let i = 0; i < a.length; i++) o.push(a[i] / (i + 1)); return o; }
+function pder(a) { if (a.length <= 1) return [0]; const o = []; for (let i = 1; i < a.length; i++) o.push(a[i] * i); return o; }
+function ptrim(a) { let n = a.length; while (n > 1 && Math.abs(a[n - 1]) < 1e-14) n--; return n === a.length ? a : a.slice(0, n); }
+function psign0(p) { for (const c of p) if (Math.abs(c) > 1e-11) return c > 0 ? 1 : -1; return 0; }
+/* all real roots in [a,b], ascending: isolate between critical points, then bisect */
+function proots(p, a, b) {
+  p = ptrim(p); const n = p.length - 1;
+  if (n <= 0) return [];
+  if (n === 1) { const r = -p[0] / p[1]; return r >= a && r <= b ? [r] : []; }
+  const pts = [a, ...proots(pder(p), a, b), b], out = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    let lo = pts[i], hi = pts[i + 1]; const flo = pev(p, lo), fhi = pev(p, hi);
+    if (flo === 0) { if (out[out.length - 1] !== lo) out.push(lo); continue; }
+    if (flo * fhi < 0) { for (let k = 0; k < 70; k++) { const m = (lo + hi) / 2; if ((pev(p, m) < 0) === (flo < 0)) lo = m; else hi = m; } out.push(hi); }
+    else if (fhi === 0 && i === pts.length - 2) out.push(hi);
+  }
+  return out;
+}
+function firstRoot(p, tmax, min = EPS) { if (!(tmax > min)) return Infinity; for (const x of proots(p, 0, tmax)) if (x > min) return x; return Infinity; }
+
+/* --- the world --- */
+const RES = ['vein', 'ore', 'metal', 'arms', 'wood', 'lore', 'awe', 'food', 'mem']; // topological: inputs before outputs
+const JOBS = {
+  farmer: { out: ['food', 0.6], clim: 1 }, woodcutter: { out: ['wood', 0.4] },
+  miner: { inp: ['vein', 0.25], out: ['ore', 0.25] }, smith: { inp: ['ore', 0.3], out: ['metal', 0.3] },
+  armorer: { inp: ['metal', 0.2], out: ['arms', 0.2] }, scholar: { out: ['lore', 0.15] },
+  priest: { out: ['awe', 0.15] }, forager: { out: ['food', 0.12] }
+};
+const JOBLIST = ['scholar', 'priest', 'armorer', 'smith', 'miner', 'woodcutter', 'farmer'];
+const UPKEEP = 0.1;
+const CLIM = [[0, 1], [260, 1], [300, .15], [340, .15], [380, 1], [1300, 1], [1340, .45], [1370, .45], [1400, 1], [2600, 1], [2670, .1], [2780, .1], [2850, 1], [3300, 1], [4000, .5], [1e7, .5]];
+function climAt(t) { let i = 0; while (CLIM[i + 1][0] <= t) i++; const [a, ca] = CLIM[i], [b, cb] = CLIM[i + 1], m = (cb - ca) / (b - a); return [ca + m * (t - a), m]; }
+
+const BLD = {
+  hut: { n: 'Hut', c: { wood: 8 }, g: 1.2, d: 'Housing for 2 more.' },
+  farm: { n: 'Farm', c: { wood: 10 }, g: 1.25, d: '2 farmer posts. Farm yield follows the climate.' },
+  lumber: { n: 'Lumber camp', c: { wood: 14 }, g: 1.3, d: '2 woodcutter posts.' },
+  granary: { n: 'Granary', c: { wood: 25 }, g: 1.4, d: 'Stores 150 more food.' },
+  script: { n: 'Scriptorium', c: { wood: 30 }, g: 1.4, d: '1 scholar post.', req: s => s.pop >= 8 || s.b.script > 0 },
+  shrine: { n: 'Shrine', c: { wood: 30 }, g: 1.4, d: '1 priest post.', req: s => s.pop >= 8 || s.b.shrine > 0 },
+  mine: { n: 'Mine', c: { wood: 30 }, g: 1.35, d: '2 miner posts. The vein is finite.', req: s => s.b.lumber > 0 },
+  forge: { n: 'Forge', c: { wood: 40, ore: 10 }, g: 1.4, d: '1 smith post. Ore into bronze.', req: s => s.b.mine > 0 },
+  armory: { n: 'Armory', c: { wood: 60, metal: 15 }, g: 1.4, d: '1 armorer post. Bronze into arms.', req: s => s.b.forge > 0 },
+  stele: { n: 'Stele', c: { lore: 40, awe: 40 }, g: 1.5, d: 'People leave 25% more Memory.', req: s => !!s.creed }
+};
+const T2 = s => s.tr[1];
+const UPG = {
+  axes: { n: 'Flint Axes', c: { wood: 15 }, t: 8, d: 'Woodcutters ×1.5.' },
+  irrigation: { n: 'Irrigation', c: { lore: 15 }, t: 20, d: 'Farmers ×1.5.' },
+  pottery: { n: 'Sealed Jars', c: { lore: 25, wood: 40 }, t: 15, d: 'Food storage ×1.5.' },
+  writing: { n: 'Writing', c: { lore: 40 }, t: 25, d: 'Scholars ×2.' },
+  rites: { n: 'Rites', c: { awe: 40 }, t: 25, d: 'Priests ×2.' },
+  masonry: { n: 'Masonry', c: { wood: 120, lore: 30 }, t: 30, d: 'Each hut houses 3.' },
+  picks: { n: 'Bronze Picks', c: { metal: 15 }, t: 15, d: 'Miners ×2. The vein drains twice as fast.', req: s => s.b.forge > 0 },
+  plough: { n: 'Bronze Plough', c: { metal: 25 }, t: 20, d: 'Farmers ×1.5.', req: s => s.b.forge > 0 },
+  bellows: { n: 'Bellows', c: { metal: 30, lore: 30 }, t: 25, d: 'Smiths ×2.', req: s => s.b.forge > 0 },
+  medicine: { n: 'Herb-lore', c: { lore: 100, awe: 40 }, t: 40, d: 'Growth ×1.5. Famine kills half as fast.' },
+  shafts: { n: 'Deep Shafts', c: { metal: 60, wood: 200 }, t: 40, d: 'Opens 4,000 more ore in the vein.', req: s => s.b.mine > 0 },
+  abyss: { n: 'The Under-Roads', c: { metal: 400, lore: 300 }, t: 80, d: 'Opens 25,000 more ore.', req: s => s.up.shafts },
+  blade: { n: 'Way of the Blade', creed: 1, c: { arms: 25 }, t: 10, d: 'Armorers ×3. One creed per lane.' },
+  bell: { n: 'Way of the Bell', creed: 1, c: { awe: 100 }, t: 10, d: 'Priests ×3, growth ×1.5. One creed per lane.' },
+  lens: { n: 'Way of the Lens', creed: 1, c: { lore: 100 }, t: 10, d: 'Scholars ×3, research takes ¾ the time. One creed per lane.' },
+  drill: { n: 'The Long Drill', c: { arms: 150 }, t: 40, d: 'Armorers ×2, smiths ×1.5.', req: s => s.creed === 'blade' },
+  hymnal: { n: 'The Thousand-Voice Hymnal', c: { awe: 300 }, t: 40, d: 'Each priest gains 2% per citizen.', req: s => s.creed === 'bell' },
+  academy: { n: 'The Academy', c: { lore: 300 }, t: 40, d: 'Scholars ×2, research takes half the time.', req: s => s.creed === 'lens' },
+  reg_sword: { n: 'Forge the Unbroken Sword', reg: 'sword', c: { arms: 4000, metal: 500 }, t: 300, d: 'A regalia. It will take three centuries.', req: s => s.creed === 'blade' && T2(s) },
+  reg_bell: { n: 'Cast the Bell That Rings Backward', reg: 'bell', c: { awe: 20000, metal: 300 }, t: 300, d: 'A regalia. It will take three centuries.', req: s => s.creed === 'bell' && T2(s) },
+  reg_lens: { n: 'Grind the Lens of Last Light', reg: 'lens', c: { lore: 20000, metal: 300 }, t: 300, d: 'A regalia. It will take three centuries.', req: s => s.creed === 'lens' && T2(s) },
+  call_sword: { n: 'Recall the Unbroken Sword', reg: 'sword', c: { arms: 300, lore: 1500 }, t: 60, d: 'Another lane forged it. The Archive remembers how.', req: (s, M) => M.E.reg_sword && s.creed !== 'blade' },
+  call_bell: { n: 'Recall the Backward Bell', reg: 'bell', c: { awe: 1500, lore: 1500 }, t: 60, d: 'Another lane cast it. The Archive remembers how.', req: (s, M) => M.E.reg_bell && s.creed !== 'bell' },
+  call_lens: { n: 'Recall the Lens of Last Light', reg: 'lens', c: { lore: 1500, awe: 1500 }, t: 60, d: 'Another lane ground it. The Archive remembers how.', req: (s, M) => M.E.reg_lens && s.creed !== 'lens' }
+};
+const TRIALS = [
+  { t: 800, n: 'The Ashen Host', omen: 'Smoke stands on the eastern horizon and does not move with the wind.',
+    fail: 'The Ashen Host came. After them there was only ash.',
+    ans: { blade: { r: 'arms', need: 150, e: 'shieldwall', x: 'The Host broke upon the shieldwall.' },
+           bell: { r: 'awe', need: 600, e: 'kneel', x: 'The bells rang. The Host knelt, and then it stayed.' },
+           lens: { r: 'lore', need: 600, e: 'fire', x: 'Fire that floats on water. The Host did not come twice.' } } },
+  { t: 2000, n: 'The Glass Plague', omen: 'A fisherman coughs, and something in the cough chimes.',
+    fail: 'The Glass Plague left the cities standing and perfectly quiet.',
+    ans: { blade: { r: 'arms', need: 2500, e: 'cordon', x: 'The cordon held. It was not kind, but it held.' },
+           bell: { r: 'awe', need: 9000, e: 'vigil', x: 'The vigil lasted nine years. Nobody was left alone to shatter.' },
+           lens: { r: 'lore', need: 9000, e: 'cure', x: 'A scholar boiled the right moss. The chiming stopped.' } } }
+];
+const FINAL_T = 4000;
+const FIXED = [];
+CLIM.slice(1, -1).forEach(c => FIXED.push({ t: c[0], k: 'c' }));
+FIXED.push({ t: 250, k: 'log', x: 'The elders say the summers are getting shorter.', c: 'omen' });
+FIXED.push({ t: 380, k: 'winterEnd' });
+TRIALS.forEach((T, i) => { FIXED.push({ t: T.t - 45, k: 'log', x: T.omen, c: 'omen' }); FIXED.push({ t: T.t, k: 'trial', i }); });
+FIXED.push({ t: 3300, k: 'log', x: 'The sun is a shade redder than the old songs say it was.', c: 'omen' });
+FIXED.push({ t: FINAL_T - 60, k: 'log', x: 'The stars at the edge of the sky are going out, one row at a time.', c: 'omen' });
+FIXED.push({ t: FINAL_T, k: 'final' });
+FIXED.sort((a, b) => a.t - b.t);
+const STOCKFEATS = [['metal', 40, 'bronze'], ['lore', 60, 'letters'], ['awe', 60, 'sky']];
+
+function derive(st, M) {
+  const b = st.b, u = st.up, cr = st.creed, d = {};
+  d.housing = 6 + M.housing + b.hut * (u.masonry ? 3 : 2);
+  d.slots = { farmer: b.farm * 2, woodcutter: 2 + b.lumber * 2, miner: b.mine * 2, smith: b.forge, armorer: b.armory, scholar: b.script, priest: b.shrine };
+  d.jm = {
+    forager: M.forage, farmer: M.farm * (u.irrigation ? 1.5 : 1) * (u.plough ? 1.5 : 1), woodcutter: M.wood * (u.axes ? 1.5 : 1),
+    miner: M.mine * (u.picks ? 2 : 1), smith: M.smith * (u.bellows ? 2 : 1) * (u.drill ? 1.5 : 1),
+    armorer: M.arms * (cr === 'blade' ? 3 : 1) * (u.drill ? 2 : 1),
+    scholar: M.lore * (u.writing ? 2 : 1) * (cr === 'lens' ? 3 : 1) * (u.academy ? 2 : 1),
+    priest: M.awe * (u.rites ? 2 : 1) * (cr === 'bell' ? 3 : 1) * (u.hymnal ? 1 + 0.02 * st.pop : 1)
+  };
+  d.cap = { food: (100 + b.granary * 150) * M.foodCap * (u.pottery ? 1.5 : 1) };
+  d.growT = 12 / (1 + st.pop / 8) / (M.growth * (u.medicine ? 1.5 : 1) * (cr === 'bell' ? 1.5 : 1));
+  d.starveT = u.medicine ? 12 : 6;
+  d.research = M.research * (u.academy ? .5 : 1) * (cr === 'lens' ? .75 : 1);
+  d.memPop = 0.02 * (1 + 0.25 * b.stele);
+  return d;
+}
+function costOf(st, o, M) {
+  const out = {};
+  if (o.k === 'b') { const B = BLD[o.x], f = Math.pow(B.g, st.b[o.x]) * M.cost; for (const r in B.c) out[r] = Math.ceil(B.c[r] * f); }
+  else if (o.k === 'u') { const U = UPG[o.x]; for (const r in U.c) out[r] = Math.ceil(U.c[r] * M.cost); }
+  return out;
+}
+function reqOk(st, o, M) { const D = o.k === 'b' ? BLD[o.x] : UPG[o.x]; return !D.req || !!D.req(st, M); }
+/* 'void' = can never happen in this lane as it stands */
+function isVoid(st, o) {
+  if (o.k !== 'u') return false; const U = UPG[o.x];
+  if (st.up[o.x] || st.proj.some(p => p.x === o.x)) return true;
+  if (U.creed && (st.creed || st.proj.some(p => UPG[p.x].creed))) return true;
+  if (U.reg && (st.up['reg_' + U.reg] || st.up['call_' + U.reg] || st.proj.some(p => UPG[p.x].reg === U.reg))) return true;
+  return false;
+}
+function initState(M) {
+  const b = {}; for (const k in BLD) b[k] = 0;
+  return { t: 0, pop: 4 + M.startPop, s: { vein: 1500, ore: 0, metal: 0, arms: 0, wood: 5, lore: 0, awe: 0, food: 30, mem: 0 }, b, up: {}, proj: [], creed: null,
+    prio: JOBLIST.slice(), lim: {}, grow: Infinity, starve: Infinity, noGrow: 0, deaths: 0, feats: {}, pend: [], tr: {}, fi: 0, dead: 0 };
+}
+function clone(st) { return { ...st, s: { ...st.s }, b: { ...st.b }, up: { ...st.up }, proj: st.proj.map(p => ({ ...p })), prio: st.prio.slice(), lim: { ...st.lim }, feats: { ...st.feats }, pend: st.pend.slice(), tr: { ...st.tr } }; }
+
+class Sim {
+  constructor(orders, M) { this.orders = orders; this.M = M; this.reset(); }
+  reset() {
+    this.segs = []; this.recs = []; this.feats = []; this.log = []; this.byId = null; this.nEv = 0;
+    const st = initState(this.M); this.events(st, -1); this.segs.push(this.build(st));
+  }
+  /* orders changed at time t: keep everything strictly before it */
+  invalidate(t) {
+    this.byId = null;
+    let i = this.idx(t); while (i >= 0 && this.segs[i].t0 >= t) i--;
+    if (i < 0) return this.reset();
+    const st = this.segs[i].st, keep = a => { let n = a.length; while (n && a[n - 1].t > st.t) n--; a.length = n; };
+    this.segs.length = i; keep(this.recs); keep(this.feats); keep(this.log);
+    this.segs.push(this.build(st));
+  }
+  order(id) { if (!this.byId) { this.byId = new Map(); for (const o of this.orders) this.byId.set(o.id, o); } return this.byId.get(id); }
+  firstAfter(t) { let lo = 0, hi = this.orders.length; while (lo < hi) { const m = (lo + hi) >> 1; if (this.orders[m].t > t) hi = m; else lo = m + 1; } return lo; }
+  idx(t) { let lo = 0, hi = this.segs.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (this.segs[m].t0 <= t) lo = m; else hi = m - 1; } return lo; }
+  note(st, x, c) { this.log.push({ t: st.t, x, c }); }
+  feat(st, k, t) { if (st.feats[k]) return; st.feats[k] = 1; this.feats.push({ k, t: t === undefined ? st.t : t }); }
+
+  extend(T) {
+    let cur = this.segs[this.segs.length - 1], guard = 0, stuck = 0;
+    while (cur.t1 <= T && guard++ < 200000) {
+      const st = clone(cur.st), tau = cur.t1 - cur.t0; st.t = cur.t1;
+      for (const r of RES) { let v = pev(cur.P[r], tau); const cap = cur.d && cur.d.cap[r]; if (v < 1e-7) v = 0; if (cap && v > cap - 1e-7) v = cap; st.s[r] = v; }
+      for (const f of cur.nf) st.feats[f] = 1;
+      this.events(st, cur.t0);
+      stuck = tau < 1e-7 ? stuck + 1 : 0;
+      cur = this.build(st, stuck > 40 ? 1e-3 : EPS); this.segs.push(cur); this.nEv++;
+    }
+  }
+
+  /* everything that happens at the instant st.t (orders with prevT < t <= st.t become due) */
+  events(st, prevT) {
+    const M = this.M;
+    while (FIXED[st.fi] && FIXED[st.fi].t <= st.t) this.fixed(st, FIXED[st.fi++]);
+    if (st.dead) return;
+    if (st.proj.length) st.proj = st.proj.filter(p => {
+      if (p.done > st.t + EPS) return true;
+      st.up[p.x] = 1; const U = UPG[p.x];
+      if (U.creed) { st.creed = p.x; this.feat(st, 'oath_' + p.x); this.note(st, 'The people swear to the ' + U.n.slice(4) + '.', 'creed'); }
+      else if (U.reg) { if (p.x.startsWith('reg_')) this.feat(st, p.x); this.note(st, p.x.startsWith('reg_') ? 'It is finished. ' + U.n.replace(/^\w+ /, '') + ' exists.' : U.n.replace('Recall', 'Recalled:') + '.', 'feat'); }
+      else this.note(st, U.n + ' is understood.', 'up');
+      if (p.x === 'shafts') st.s.vein += 4000; if (p.x === 'abyss') st.s.vein += 25000;
+      return false;
+    });
+    if (st.grow <= st.t + EPS) { st.pop++; st.grow = Infinity; }
+    if (st.starve <= st.t + EPS) { st.pop--; st.deaths++; st.starve = Infinity; st.noGrow = st.t + 25; st.grow = Infinity; if (st.deaths === 1) this.note(st, 'The stores are empty. The first grave of the famine is dug.', 'bad'); }
+    for (let i = this.firstAfter(prevT); i < this.orders.length && this.orders[i].t <= st.t; i++) {
+      const o = this.orders[i];
+      if (o.k === 'l') { if (o.n == null) delete st.lim[o.x]; else st.lim[o.x] = o.n; this.recs.push({ id: o.id, t: st.t, s: 'ok' }); }
+      else if (o.k === 'p') { st.prio = o.list.slice(); this.recs.push({ id: o.id, t: st.t, s: 'ok' }); }
+      else st.pend.push(o.id);
+    }
+    for (let again = true; again && st.pend.length;) {
+      again = false;
+      for (let i = 0; i < st.pend.length; i++) {
+        const o = this.order(st.pend[i]);
+        if (isVoid(st, o)) { this.recs.push({ id: o.id, t: st.t, s: 'void' }); st.pend.splice(i--, 1); continue; }
+        if (!reqOk(st, o, M)) continue;
+        const c = costOf(st, o, M); let ok = true;
+        for (const r in c) if (st.s[r] < c[r] - 1e-6) { ok = false; break; }
+        if (!ok) continue;
+        for (const r in c) st.s[r] = Math.max(0, st.s[r] - c[r]);
+        if (o.k === 'b') { st.b[o.x]++; this.recs.push({ id: o.id, t: st.t, s: 'ok' }); }
+        else { const done = st.t + UPG[o.x].t * derive(st, M).research; st.proj.push({ x: o.x, t0: st.t, done }); this.recs.push({ id: o.id, t: st.t, s: 'ok', done }); }
+        st.pend.splice(i--, 1); again = true;
+      }
+    }
+    if (st.pop >= 8) this.feat(st, 'hearth');
+    if (st.deaths >= 3) this.feat(st, 'hunger');
+    for (const [r, n, k] of STOCKFEATS) if (st.s[r] >= n) this.feat(st, k);
+  }
+  fixed(st, f) {
+    if (st.dead) return;
+    if (f.k === 'log') this.note(st, f.x, f.c);
+    else if (f.k === 'winterEnd') {
+      if (!st.deaths && st.pop >= 12) { this.feat(st, 'stored'); this.note(st, 'The Long Winter ends. Every name in the census is still there.', 'feat'); }
+      else this.note(st, 'The Long Winter ends.' + (st.deaths ? ' ' + st.deaths + ' did not see the thaw.' : ''), st.deaths ? 'bad' : 'up');
+    } else if (f.k === 'trial') {
+      const T = TRIALS[f.i], keys = [st.creed, 'blade', 'bell', 'lens'].filter((k, i, a) => k && a.indexOf(k) === i);
+      const k = keys.find(k => st.s[T.ans[k].r] >= T.ans[k].need - 1e-6);
+      if (!k) return this.fall(st, T.fail, T.n);
+      const A = T.ans[k]; st.s[A.r] -= A.need; st.tr[f.i] = k; this.feat(st, A.e); this.note(st, T.n + '. ' + A.x, 'feat');
+      if (f.i === 0 && !st.creed) this.feat(st, 'unaligned');
+    } else if (f.k === 'final') {
+      const has = k => st.up['reg_' + k] || st.up['call_' + k];
+      if (has('sword') && has('bell') && has('lens')) { st.tr[2] = 'all'; this.feat(st, 'dawn'); this.note(st, 'The Unmaking arrives. The Sword bars it, the Bell calls back what it took, the Lens shows it its own face. It unmakes itself. Morning comes anyway.', 'feat'); }
+      else this.fall(st, 'The Unmaking arrives. It is not cruel. It simply finishes.', 'The Unmaking');
+    }
+  }
+  fall(st, x, by) { st.dead = st.t; st.by = by; st.pend = []; st.proj = []; this.feat(st, 'ruin'); this.note(st, x, 'fall'); }
+
+  /* closed-form segment starting from state st */
+  build(st, minTau = EPS) {
+    const M = this.M, seg = { t0: st.t, t1: Infinity, st, P: {}, mode: {}, w: {}, nf: [], d: null };
+    if (st.dead) { for (const r of RES) seg.P[r] = [st.s[r]]; return seg; }
+    const d = seg.d = derive(st, M);
+    let free = st.pop;
+    for (const j of st.prio) { const n = Math.max(0, Math.min(free, d.slots[j], st.lim[j] == null ? Infinity : st.lim[j])); seg.w[j] = n; free -= n; }
+    seg.w.forager = free;
+    const clim = climAt(st.t), F = {}; // F[j]: activity polynomial of job j
+    for (const j in JOBS) F[j] = pscale(JOBS[j].clim ? clim : [1], seg.w[j] * d.jm[j]);
+    let tS = Infinity; // next scheduled instant
+    if (FIXED[st.fi]) tS = FIXED[st.fi].t;
+    const oi = this.firstAfter(st.t); if (oi < this.orders.length) tS = Math.min(tS, this.orders[oi].t);
+    for (const p of st.proj) tS = Math.min(tS, p.done);
+    const roots = [];
+    for (const r of RES) {
+      let inflow = [0], D = r === 'food' ? st.pop * UPKEEP : 0;
+      for (const j in JOBS) { const J = JOBS[j]; if (J.out[0] === r) inflow = padd(inflow, F[j], J.out[1]); if (J.inp && J.inp[0] === r) D += J.inp[1] * seg.w[j] * d.jm[j]; }
+      if (r === 'mem') inflow = padd(padd([st.pop * d.memPop], seg.P.lore, 0.001), seg.P.awe, 0.001);
+      const net = padd(inflow, [D], -1), s0 = st.s[r], cap = d.cap[r] || Infinity, sg = psign0(net);
+      if (s0 <= EPS && sg < 0) { // empty: consumers throttled to what flows in
+        seg.mode[r] = 'empty'; seg.P[r] = [0];
+        for (const j in JOBS) if (JOBS[j].inp && JOBS[j].inp[0] === r) F[j] = pscale(inflow, seg.w[j] * d.jm[j] / D);
+        roots.push(net);
+      } else if (s0 >= cap - EPS && sg > 0) { seg.mode[r] = 'full'; seg.P[r] = [cap]; roots.push(net); }
+      else { seg.P[r] = pint(net, s0); if (ptrim(net).length > 1 || sg < 0) roots.push(seg.P[r]); if (cap < Infinity) roots.push(padd(seg.P[r], [cap], -1)); }
+    }
+    seg.starving = seg.mode.food === 'empty';
+    if (seg.starving) { st.grow = Infinity; if (st.starve === Infinity) st.starve = st.t + d.starveT; }
+    else { st.starve = Infinity; if (st.pop >= d.housing) st.grow = Infinity; else if (st.grow === Infinity) st.grow = Math.max(st.t, st.noGrow) + d.growT; }
+    tS = Math.min(tS, st.grow, st.starve);
+    let tmax = Math.min(tS - st.t, 1e6), tR = Infinity;
+    for (const p of roots) tR = Math.min(tR, firstRoot(p, Math.min(tmax, tR), minTau));
+    tmax = Math.min(tmax, tR);
+    for (const id of st.pend) { // when does a waiting order become affordable?
+      const o = this.order(id); if (!reqOk(st, o, M)) continue;
+      const c = costOf(st, o, M); let ta = 0;
+      for (const r in c) { if (st.s[r] >= c[r] - 1e-6) continue; ta = Math.max(ta, firstRoot(padd(seg.P[r], [c[r]], -1), tmax, minTau)); if (ta === Infinity) break; }
+      if (ta > 0 && ta < tR) { tR = ta; tmax = Math.min(tmax, tR); }
+    }
+    seg.t1 = Math.min(tS, st.t + tR);
+    const span = Math.min(seg.t1 - st.t, 1e6);
+    for (const [r, n, k] of STOCKFEATS) if (!st.feats[k]) { const x = firstRoot(padd(seg.P[r], [n], -1), span); if (x < Infinity) { seg.nf.push(k); this.feats.push({ k, t: st.t + x }); } }
+    return seg;
+  }
+
+  at(t) {
+    this.extend(t);
+    const seg = this.segs[this.idx(t)], tau = t - seg.t0, v = {}, dv = {};
+    for (const r of RES) { v[r] = Math.max(0, pev(seg.P[r], tau)); dv[r] = pev(pder(seg.P[r]), tau); }
+    return { seg, st: seg.st, d: seg.d, v, dv, w: seg.w, mode: seg.mode, clim: climAt(t)[0] };
+  }
+}
+
+/* ===== Game layer: save, lanes, echoes, rendering ===== */
+const $ = id => document.getElementById(id);
+const KEY = 'errata-eot-save-1';
+const HUES = ['#cfa650', '#62b0a3', '#d0603f', '#8fa3d6', '#a9bf6a', '#c48bb8'];
+const LANES = ['Amber', 'Verdigris', 'Cinder', 'Salt', 'Lantern', 'Thistle', 'Marrow', 'Quill', 'Halcyon', 'Umber', 'Sable', 'Brine', 'Tallow', 'Rime'];
+const RN = { food: 'Food', wood: 'Timber', vein: 'Ore vein', ore: 'Ore', metal: 'Bronze', arms: 'Arms', lore: 'Lore', awe: 'Awe', mem: 'Memory' };
+const RC = { food: '#a9bf6a', wood: '#b08968', vein: '#6f7b80', ore: '#9aa6ab', metal: '#cfa650', arms: '#d0603f', lore: '#8fa3d6', awe: '#c48bb8', mem: '#e7e0cf' };
+const SHOW = ['food', 'wood', 'lore', 'awe', 'vein', 'ore', 'metal', 'arms', 'mem'];
+const JN = { farmer: 'Farmers', woodcutter: 'Woodcutters', miner: 'Miners', smith: 'Smiths', armorer: 'Armorers', scholar: 'Scholars', priest: 'Priests', forager: 'Foragers' };
+const JD = { farmer: 'food, by the climate', woodcutter: 'timber', miner: 'vein into ore', smith: 'ore into bronze', armorer: 'bronze into arms', scholar: 'lore', priest: 'awe', forager: 'a little food, whatever the weather' };
+const mul = (k, f) => m => { m[k] *= f; };
+const ECHO = {
+  hearth: { n: 'First Hearth', how: 'A lane holds 8 people.', fx: 'The horizon recedes 50% faster.', sp: .5 },
+  stored: { n: 'Stored Summers', how: 'A lane of 12 or more comes through the Long Winter with no famine dead.', fx: 'Food storage ×2 in every lane.', sp: .1, m: mul('foodCap', 2), after: 'w' },
+  hunger: { n: "Hunger's Lesson", how: 'A lane loses three people to famine.', fx: 'Foragers ×1.5 in every lane.', sp: .1, m: mul('forage', 1.5) },
+  bronze: { n: 'Bronze Dawn', how: 'A lane holds 40 bronze.', fx: 'Miners and smiths ×1.25 in every lane.', sp: .1, m: m => { m.mine *= 1.25; m.smith *= 1.25; } },
+  letters: { n: 'The First Letters', how: 'A lane holds 60 lore.', fx: 'Research takes 30% less time.', sp: .1, m: mul('research', .7) },
+  sky: { n: 'Something in the Sky', how: 'A lane holds 60 awe.', fx: 'Every people grows 30% faster.', sp: .1, m: mul('growth', 1.3) },
+  oath_blade: { n: 'Oath of the Blade', how: 'A lane swears to the Blade.', fx: 'One more lane. Armorers ×1.25 everywhere.', sp: .15, lane: 1, m: mul('arms', 1.25) },
+  oath_bell: { n: 'Oath of the Bell', how: 'A lane swears to the Bell.', fx: 'One more lane. Priests ×1.25 everywhere.', sp: .15, lane: 1, m: mul('awe', 1.25) },
+  oath_lens: { n: 'Oath of the Lens', how: 'A lane swears to the Lens.', fx: 'One more lane. Scholars ×1.25 everywhere.', sp: .15, lane: 1, m: mul('lore', 1.25) },
+  unaligned: { n: 'The Unsworn', how: 'A lane with no creed outlasts the Ashen Host.', fx: 'One more lane.', sp: .1, lane: 1, after: 0 },
+  shieldwall: { n: 'Shieldwall', how: 'Answer the Ashen Host with arms.', fx: 'Armorers ×1.5 in every lane.', sp: .2, m: mul('arms', 1.5), after: 0 },
+  kneel: { n: 'The Host Kneels', how: 'Answer the Ashen Host with awe.', fx: 'Every lane begins with 4 more people and room for them.', sp: .2, m: m => { m.startPop += 4; m.housing += 4; }, after: 0 },
+  fire: { n: 'Fire on Water', how: 'Answer the Ashen Host with lore.', fx: 'Woodcutters ×1.5 in every lane.', sp: .2, m: mul('wood', 1.5), after: 0 },
+  cordon: { n: 'The Cordon', how: 'Answer the Glass Plague with arms.', fx: 'Everything costs 10% less.', sp: .3, m: mul('cost', .9), after: 1 },
+  vigil: { n: 'The Nine-Year Vigil', how: 'Answer the Glass Plague with awe.', fx: 'Every people grows 50% faster.', sp: .3, m: mul('growth', 1.5), after: 1 },
+  cure: { n: 'The Right Moss', how: 'Answer the Glass Plague with lore.', fx: 'Farmers ×1.5 in every lane.', sp: .3, m: mul('farm', 1.5), after: 1 },
+  reg_sword: { n: 'The Unbroken Sword', how: 'A lane of the Blade forges its regalia after the Plague.', fx: 'Lanes of other creeds may Recall it.', sp: .3, after: 1 },
+  reg_bell: { n: 'The Bell That Rings Backward', how: 'A lane of the Bell casts its regalia after the Plague.', fx: 'Lanes of other creeds may Recall it.', sp: .3, after: 1 },
+  reg_lens: { n: 'The Lens of Last Light', how: 'A lane of the Lens grinds its regalia after the Plague.', fx: 'Lanes of other creeds may Recall it.', sp: .3, after: 1 },
+  ruin: { n: 'Witness to Ruin', how: 'Watch a lane fall.', fx: 'The horizon recedes 20% faster. Ruin is also a record.', sp: .2 },
+  dawn: { n: 'The Morning After the End', how: 'Bring one lane through the Unmaking.', fx: 'The horizon recedes twice as fast, into whatever comes next.', sp: 2, after: 2 },
+  altered: { n: 'Altered Destinies', secret: 1, fx: 'A small salute to an old DOS game. Horizon +5%.', sp: .05 },
+  shaken: { n: 'The Shaken Hourglass', secret: 1, fx: 'You shook it. Sand fell. Nothing else is different, probably.', sp: 0 },
+  gardener: { n: "The Gardener's Ledger", secret: 1, fx: 'Three lanes pruned. The Archive keeps their names anyway. Horizon +10%.', sp: .1 }
+};
+let G, sims = new Map(), mods, dirty = true, undoStack = [], saveT = 0, panelT = 0, clicks = [], renaming = null, pruneAsk = null, cache = {};
+
+/* --- helpers --- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const yr = t => Math.floor(t + 1e-6).toLocaleString('en-US');
+function fmt(x) { const a = Math.abs(x); if (a >= 1e6) return (x / 1e6).toFixed(2) + 'M'; if (a >= 1e4) return (x / 1e3).toFixed(1) + 'k'; if (a >= 100) return Math.round(x).toLocaleString('en-US'); if (a >= 10) return x.toFixed(0); return x.toFixed(1); }
+function fmtRate(x) { if (Math.abs(x) < 0.005) return ''; return (x > 0 ? '+' : '−') + (Math.abs(x) < 10 ? Math.abs(x).toFixed(2) : fmt(Math.abs(x))); }
+const lane = id => G.br.find(b => b.id === id);
+const act = () => lane(G.act) || G.br[0];
+const sim = b => sims.get(b.id);
+function civName(b) { const A = ['Vael', 'Oru', 'Ish', 'Tam', 'Kel', 'Sur', 'Ane', 'Dho', 'Myr', 'Eth', 'Ull', 'Pera'], B = ['in', 'ar', 'eth', 'uun', 'ai', 'os', 'im']; return 'The ' + A[(b.id * 7 + 3) % A.length] + B[(b.id * 5 + 1) % B.length]; }
+function era(st) { if (st.dead) return 'Ash'; if (st.tr[2]) return 'The Morning'; if (st.creed) return { blade: 'Age of Banners', bell: 'Age of Bells', lens: 'Age of Glass' }[st.creed]; if (st.b.forge) return 'Age of Bronze'; if (st.b.farm) return 'Age of Furrows'; return 'Age of Hearths'; }
+function toast(h, cls) { const d = document.createElement('div'); d.className = 'toast ' + (cls || ''); d.innerHTML = h; $('toasts').appendChild(d); setTimeout(() => d.remove(), 7000); }
+function setHTML(id, h) { if (cache[id] !== h) { cache[id] = h; $(id).innerHTML = h; } }
+
+/* --- save --- */
+function modsOf() { const m = { E: G.echo, forage: 1, farm: 1, wood: 1, mine: 1, smith: 1, arms: 1, lore: 1, awe: 1, foodCap: 1, growth: 1, startPop: 0, housing: 0, research: 1, cost: 1 }; for (const k in G.echo) if (ECHO[k] && ECHO[k].m) ECHO[k].m(m); return m; }
+function laneCap() { let n = 2; for (const k in G.echo) if (ECHO[k] && ECHO[k].lane) n++; return n; }
+function newGame() {
+  G = { v: 1, H: 25, last: Date.now(), born: Date.now(), echo: {}, br: [], act: 0, cur: 25, follow: true, pruned: [], seq: 1, shakes: 0, won: false, nl: 0, intro: true, view: null };
+  addLane(null, 0, []);
+}
+function addLane(parent, forkT, orders) { const id = G.seq++, k = G.nl++; const b = { id, name: LANES[k % LANES.length] + (k >= LANES.length ? ' ' + (1 + Math.floor(k / LANES.length)) : ''), hue: k % HUES.length, parent, forkT, orders }; G.br.push(b); G.act = id; return b; }
+function rebuild() { mods = modsOf(); sims.clear(); for (const b of G.br) sims.set(b.id, new Sim(b.orders, mods)); dirty = true; }
+function save() { G.last = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(G)); } catch (e) { } }
+function load(raw) { try { const o = typeof raw === 'string' ? JSON.parse(raw) : raw; if (o && o.v === 1 && Array.isArray(o.br) && o.br.length) { G = o; return true; } } catch (e) { } return false; }
+
+/* --- time --- */
+function resonance(b) { const V = sim(b).at(G.H); return V.st.dead ? 0 : 0.25 * Math.log2(1 + V.v.mem / 200); }
+function echoSpeed() { let s = 0; for (const k in G.echo) if (ECHO[k]) s += ECHO[k].sp; return s; }
+function speed() { let r = 0; for (const b of G.br) r += resonance(b); return (1 + echoSpeed()) * (1 + r); }
+function latch(k) {
+  if (G.echo[k] || !ECHO[k]) return false; G.echo[k] = Math.round(G.H);
+  toast('<b>Echo recorded</b><span>' + ECHO[k].n + '</span><small>' + ECHO[k].fx + '</small>', 'echo'); return true;
+}
+function checkEchoes() {
+  for (let pass = 0; pass < 6; pass++) {
+    let got = false;
+    for (const b of G.br) { const s = sim(b); s.extend(G.H); for (const f of s.feats) if (f.t <= G.H && latch(f.k)) got = true; }
+    if (!got) break;
+    rebuild(); // an echo changes every lane, from year 0
+  }
+  if (G.echo.dawn && !G.won) { G.won = true; openModal(endingHTML()); }
+}
+function advance(dt) {
+  const n = Math.min(4000, Math.max(1, Math.ceil(dt / 2))), h = dt / n;
+  for (let i = 0; i < n; i++) { G.H += speed() * h; checkEchoes(); }
+}
+
+/* --- editing a lane's orders --- */
+function edit(b, t, fn) {
+  undoStack.push({ id: b.id, orders: JSON.stringify(b.orders) }); if (undoStack.length > 80) undoStack.shift();
+  fn(b.orders); sim(b).invalidate(t); checkEchoes(); dirty = true; saveT = 0;
+}
+function insert(arr, o) { const i = arr.findIndex(x => x.t > o.t); if (i < 0) arr.push(o); else arr.splice(i, 0, o); }
+function place(o) {
+  const b = act(), t = G.cur; o.t = t; o.id = G.seq++;
+  edit(b, t, arr => { if (o.k === 'l' || o.k === 'p') { const i = arr.findIndex(x => x.t === t && x.k === o.k && (o.k === 'p' || x.x === o.x)); if (i >= 0) arr.splice(i, 1); } insert(arr, o); });
+}
+function undo() {
+  const u = undoStack.pop(); if (!u) return; const b = lane(u.id); if (!b) return;
+  b.orders = JSON.parse(u.orders); const s = sim(b); s.orders = b.orders; s.reset(); checkEchoes(); dirty = true;
+}
+function describe(o) {
+  if (o.k === 'b') return 'Build ' + BLD[o.x].n;
+  if (o.k === 'u') return UPG[o.x].n;
+  if (o.k === 'l') return JN[o.x] + ': ' + (o.n == null ? 'fill every post' : 'at most ' + o.n);
+  return 'Staff first: ' + o.list.slice(0, 3).map(j => JN[j].toLowerCase()).join(', ') + '…';
+}
+
+/* --- lanes --- */
+function fork() {
+  if (G.br.length >= laneCap()) return toast('<b>No room for another lane</b><small>Creeds open more. Each oath a lane swears adds one.</small>');
+  const p = act(), t = G.cur, orders = p.orders.filter(o => o.t <= t).map(o => ({ ...o, id: G.seq++ }));
+  const b = addLane(p.id, t, orders); sims.set(b.id, new Sim(b.orders, mods)); dirty = true; saveT = 0;
+  toast('<b>' + esc(b.name) + '</b><small>Forked from ' + esc(p.name) + ' at year ' + yr(t) + '. Everything before that came with it.</small>');
+}
+function prune(id) {
+  if (G.br.length < 2) return; const b = lane(id); G.pruned.push(b.name);
+  G.br = G.br.filter(x => x !== b); sims.delete(id); for (const c of G.br) if (c.parent === id) c.parent = null;
+  if (G.act === id) G.act = G.br[0].id; undoStack = undoStack.filter(u => u.id !== id);
+  if (G.pruned.length >= 3) latch('gardener'); dirty = true; saveT = 0;
+}
+function rename(id, name) { const b = lane(id); name = name.trim().slice(0, 24); if (b && name) { b.name = name; if (/millenni|altered\s*destin/i.test(name)) latch('altered'); } renaming = null; dirty = true; saveT = 0; }
+
+/* --- the river (canvas) --- */
+const TOP = 40, ROW = 46;
+function getView() { const H = Math.max(G.H, 1); if (!G.view) return [0, H]; let [a, b] = G.view; if (G.follow && b < H) { a += H - b; b = H; } return [a, b]; }
+function hatch(c) { if (hatch.p) return hatch.p; const k = document.createElement('canvas'); k.width = k.height = 8; const x = k.getContext('2d'); x.strokeStyle = 'rgba(140,146,148,.35)'; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 8); x.lineTo(8, 0); x.stroke(); return hatch.p = c.createPattern(k, 'repeat'); }
+function drawRiver() {
+  const cv = $('cv'), W = cv.clientWidth, n = G.br.length, Hp = TOP + n * ROW + 6, dpr = window.devicePixelRatio || 1;
+  if (!W) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(Hp * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(Hp * dpr); cv.style.height = Hp + 'px'; }
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, Hp);
+  const [v0, v1] = getView(), X = t => (t - v0) / (v1 - v0) * W, T = x => v0 + x / W * (v1 - v0), xH = Math.min(W, X(G.H)), xa = Math.max(0, X(0));
+  c.font = '11px "Alegreya Sans", sans-serif'; c.textBaseline = 'middle';
+  // seasons strip
+  c.beginPath(); c.moveTo(xa, 20);
+  for (let x = xa; x <= xH; x += 2) c.lineTo(x, 20 - 14 * climAt(Math.max(0, T(x)))[0]);
+  c.lineTo(xH, 20); c.closePath(); c.fillStyle = 'rgba(207,166,80,.28)'; c.fill();
+  c.fillStyle = '#8d9a9c'; c.fillText('seasons', 4, 9);
+  // axis
+  const span = v1 - v0, steps = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000]; let step = steps.find(s => span / s <= W / 70) || 10000;
+  c.strokeStyle = '#2a363d'; c.lineWidth = 1; c.textAlign = 'center';
+  for (let t = Math.ceil(v0 / step) * step; t <= Math.min(v1, G.H); t += step) { const x = Math.round(X(t)) + .5; c.beginPath(); c.moveTo(x, 22); c.lineTo(x, Hp); c.stroke(); c.fillStyle = '#8d9a9c'; if (x > 20 && x < W - 20) c.fillText(t.toLocaleString('en-US'), x, 31); }
+  c.textAlign = 'left';
+  let maxPop = 20; for (const b of G.br) { const st = sim(b).at(G.H).st; maxPop = Math.max(maxPop, st.pop); }
+  G.br.forEach((b, i) => {
+    const s = sim(b), y = TOP + i * ROW, hue = HUES[b.hue], on = b.id === G.act;
+    c.globalAlpha = on ? .2 : .1; c.fillStyle = hue; c.fillRect(xa, y + 3, xH - xa, ROW - 6); c.globalAlpha = 1;
+    // population silhouette, famine underline, ash after a fall
+    let dead = Infinity; const base = y + ROW - 4, hh = ROW - 12; c.beginPath(); c.moveTo(xa, base); let fam = [];
+    for (let x = xa; x <= xH; x += 2) { const sg = s.segs[s.idx(Math.max(0, T(x)))], st = sg.st; if (st.dead) { dead = st.dead; c.lineTo(x, base); break; } c.lineTo(x, base - hh * Math.min(1, st.pop / maxPop)); if (sg.starving) fam.push(x); if (x + 2 > xH) c.lineTo(x, base); }
+    c.closePath(); c.globalAlpha = on ? .75 : .4; c.fillStyle = hue; c.fill(); c.globalAlpha = 1;
+    c.fillStyle = '#d0603f'; for (const x of fam) c.fillRect(x, base, 2, 2);
+    if (dead <= G.H) { const xd = Math.max(xa, X(dead)); c.fillStyle = 'rgba(20,24,26,.6)'; c.fillRect(xd, y + 3, xH - xd, ROW - 6); c.fillStyle = hatch(c); c.fillRect(xd, y + 3, xH - xd, ROW - 6); }
+    if (b.parent != null) { const pi = G.br.findIndex(p => p.id === b.parent), xf = X(b.forkT); if (pi >= 0) { c.fillStyle = 'rgba(15,21,24,.55)'; c.fillRect(xa, y + 3, Math.max(0, Math.min(xf, xH) - xa), ROW - 6); const py = TOP + pi * ROW + ROW / 2; c.strokeStyle = hue; c.lineWidth = 1.5; c.beginPath(); c.moveTo(xf, py); c.bezierCurveTo(xf + 14, py, xf - 2, y + ROW / 2, xf + 14, y + ROW / 2); c.stroke(); c.beginPath(); c.arc(xf, py, 3, 0, 7); c.fillStyle = hue; c.fill(); } }
+    const done = new Map(); for (const r of s.recs) if (r.t <= G.H) done.set(r.id, r);
+    for (const o of b.orders) { const x = X(o.t); if (x < -2 || x > xH + 1) continue; const r = done.get(o.id); c.fillStyle = !r ? '#8d9a9c' : r.s === 'void' ? '#d0603f' : '#e7e0cf'; c.fillRect(Math.round(x), y + 5, 1.5, r ? 7 : 4); }
+    for (const f of s.feats) if (f.t <= G.H && ECHO[f.k]) { const x = X(f.t), m = y + 16; if (x < 0 || x > W) continue; c.beginPath(); c.moveTo(x, m - 5); c.lineTo(x + 4, m); c.lineTo(x, m + 5); c.lineTo(x - 4, m); c.closePath(); c.fillStyle = f.k === 'ruin' ? '#d0603f' : '#f0d898'; c.fill(); c.strokeStyle = '#0f1518'; c.lineWidth = 1; c.stroke(); }
+    if (on) { c.strokeStyle = hue; c.lineWidth = 1; c.strokeRect(xa + .5, y + 3.5, Math.max(0, xH - xa - 1), ROW - 7); }
+  });
+  // trials already witnessed
+  c.setLineDash([3, 4]); c.strokeStyle = '#d0603f'; c.fillStyle = '#d0603f';
+  [...TRIALS, { t: FINAL_T, n: 'The Unmaking' }].forEach(tr => { if (tr.t > G.H) return; const x = Math.round(X(tr.t)) + .5; if (x < 0 || x > W) return; c.beginPath(); c.moveTo(x, 4); c.lineTo(x, Hp); c.stroke(); const w = c.measureText(tr.n).width; c.fillText(tr.n, x + w + 8 > W ? x - w - 5 : x + 5, 9); });
+  c.setLineDash([]);
+  // fog past the horizon, and the horizon itself
+  if (xH < W) { c.fillStyle = hatch(c); c.globalAlpha = .5; c.fillRect(xH, 0, W - xH, Hp); c.globalAlpha = 1; }
+  const g = c.createLinearGradient(xH - 26, 0, xH, 0); g.addColorStop(0, 'rgba(240,216,152,0)'); g.addColorStop(1, 'rgba(240,216,152,.4)'); c.fillStyle = g; c.fillRect(xH - 26, 22, 26, Hp - 22);
+  c.fillStyle = '#f0d898'; c.fillRect(xH - 1.5, 22, 1.5, Hp - 22);
+  // cursor
+  const xc = Math.round(X(G.cur)); if (xc >= 0 && xc <= W) { c.fillStyle = '#e7e0cf'; c.fillRect(xc - .5, 22, 1, Hp - 22); c.beginPath(); c.moveTo(xc - 5, 22); c.lineTo(xc + 5, 22); c.lineTo(xc, 29); c.closePath(); c.fill(); }
+}
+function scrubTo(e) {
+  const cv = $('cv'), r = cv.getBoundingClientRect(), [v0, v1] = getView(), x = e.clientX - r.left, t = v0 + x / r.width * (v1 - v0);
+  if (t >= G.H - (v1 - v0) / r.width * 3) { G.follow = true; G.cur = G.H; } else { G.follow = false; G.cur = Math.max(0, Math.round(t)); }
+  dirty = true;
+}
+
+/* --- panels --- */
+function costHTML(c, v) { let h = ''; for (const r in c) h += '<span class="c' + (v[r] < c[r] - 1e-6 ? ' no' : '') + '" title="' + RN[r] + '"><i style="background:' + RC[r] + '"></i>' + fmt(c[r]).replace('.0', '') + '</span>'; return h; }
+function renderLanes() {
+  if (renaming != null) return;
+  let h = '<div class="lhead">' + G.br.length + ' of ' + laneCap() + ' lanes</div>';
+  for (const b of G.br) {
+    const V = sim(b).at(G.cur), on = b.id === G.act, r = resonance(b);
+    h += '<div class="lane' + (on ? ' on' : '') + '" data-a="sel" data-id="' + b.id + '" style="--h:' + HUES[b.hue] + '"><b>' + esc(b.name) + '</b><small>' +
+      (V.st.dead ? 'fallen ' + yr(V.st.dead) : V.st.pop + ' people') + ' · ' + (r ? 'resonance +' + r.toFixed(2) : 'silent') + '</small><span class="lt">' +
+      '<button data-a="ren" data-id="' + b.id + '" title="Rename this lane" aria-label="Rename">✎</button>' +
+      (G.br.length > 1 ? '<button data-a="prune" data-id="' + b.id + '" title="Prune this lane" class="' + (pruneAsk === b.id ? 'ask' : '') + '">' + (pruneAsk === b.id ? 'prune?' : '✕') + '</button>' : '') + '</span></div>';
+  }
+  setHTML('lanes', h);
+}
+function renderState(b, V) {
+  const st = V.st, d = V.d;
+  let h = '<div class="civ"><h2>' + civName(b) + '</h2><p>' + esc(b.name) + ' lane · year ' + yr(G.cur) + ' · ' + era(st) + '</p></div>';
+  if (st.dead) h += '<div class="fallen"><b>Fallen in year ' + yr(st.dead) + '</b>' + esc(st.by) + ' ended this lane. Nothing after that year can be ordered. Drag the cursor back before it and prepare, or fork an earlier year into a new lane.</div>';
+  else {
+    const g = V.seg.starving ? '<span class="bad">famine</span>' : st.pop >= d.housing ? 'housing is full' : st.grow < Infinity ? 'next birth in ' + Math.max(0, st.grow - G.cur).toFixed(0) + ' yr' : '';
+    h += '<div class="people"><b>' + st.pop + '</b> people <span class="dim">of ' + d.housing + ' housed</span><span class="g">' + g + '</span></div>';
+    if (V.clim < .995) h += '<div class="clim">Failing harvests. Farms yield ' + Math.round(V.clim * 100) + '%.</div>';
+  }
+  h += '<table class="res">';
+  for (const r of SHOW) {
+    if (r !== 'food' && r !== 'wood' && r !== 'mem' && r !== 'vein' && !(V.v[r] > 0.05) && !Math.abs(V.dv[r])) { if (!(st.b.mine && (r === 'ore'))) continue; }
+    if (r === 'vein' && !st.b.mine) continue;
+    const cap = d && d.cap[r], m = V.mode[r];
+    let note = m === 'empty' ? (r === 'food' ? 'none left' : r === 'vein' ? 'exhausted' : 'used as it comes') : m === 'full' ? 'stores full' : (V.dv[r] < -0.005 && r !== 'vein' ? 'gone in ~' + Math.ceil(V.v[r] / -V.dv[r]) + ' yr' : '');
+    if (r === 'vein' && !m && V.dv[r] < 0) note = '~' + fmt(V.v[r] / -V.dv[r]) + ' yr left';
+    h += '<tr class="' + (m === 'empty' && r !== 'ore' && r !== 'metal' ? 'warn' : '') + '"><td><i style="background:' + RC[r] + '"></i>' + RN[r] + '</td><td class="num">' + fmt(V.v[r]) + (cap ? '<span class="dim"> / ' + fmt(cap) + '</span>' : '') + '</td><td class="num rate">' + fmtRate(V.dv[r]) + '</td><td class="note">' + note + '</td></tr>';
+  }
+  h += '</table>';
+  setHTML('pState', h);
+}
+function renderJobs(V) {
+  const st = V.st, d = V.d; if (st.dead) return setHTML('pJobs', '');
+  let h = '<h3>Work <span class="dim">top of the list is staffed first</span></h3><table class="jobs">';
+  st.prio.forEach((j, i) => {
+    const sl = d.slots[j]; if (!sl && j !== 'woodcutter') return;
+    const lim = st.lim[j];
+    h += '<tr><td class="ud"><button data-a="up" data-x="' + j + '" title="Staff earlier" aria-label="Move up"' + (i ? '' : ' disabled') + '>▲</button><button data-a="dn" data-x="' + j + '" title="Staff later" aria-label="Move down"' + (i < st.prio.length - 1 ? '' : ' disabled') + '>▼</button></td>' +
+      '<td><b>' + JN[j] + '</b><small>' + JD[j] + '</small></td><td class="num">' + V.w[j] + '<span class="dim"> / ' + sl + '</span></td>' +
+      '<td class="lim"><button data-a="lim" data-x="' + j + '" data-d="-1" title="Allow one fewer" aria-label="Fewer">−</button><span title="Most this lane will put here">' + (lim == null ? 'all' : lim) + '</span><button data-a="lim" data-x="' + j + '" data-d="1" title="Allow one more" aria-label="More">+</button></td></tr>';
+  });
+  h += '<tr><td></td><td><b>' + JN.forager + '</b><small>' + JD.forager + '</small></td><td class="num">' + V.w.forager + '</td><td class="dim">everyone else</td></tr></table>';
+  setHTML('pJobs', h);
+}
+function renderWorks(V) {
+  const st = V.st; if (st.dead) return setHTML('pWorks', '<p class="dim">Ash does not take orders.</p>');
+  let h = '<h3>Build <span class="dim">shift-click for five</span></h3><div class="grid">';
+  for (const x in BLD) { const o = { k: 'b', x }; if (!reqOk(st, o, mods)) continue; const c = costOf(st, o, mods), ok = Object.keys(c).every(r => V.v[r] >= c[r] - 1e-6);
+    h += '<button class="w' + (ok ? '' : ' short') + '" data-a="b" data-x="' + x + '" title="' + BLD[x].d + (ok ? '' : ' Not affordable yet: ordering it now queues it until the lane can pay.') + '"><b>' + BLD[x].n + '<span class="n">' + (st.b[x] || '') + '</span></b><span class="cost">' + costHTML(c, V.v) + '</span><small>' + BLD[x].d + '</small></button>'; }
+  h += '</div>';
+  let up = '', cr = '';
+  for (const x in UPG) { const o = { k: 'u', x }, U = UPG[x]; if (isVoid(st, o) || !reqOk(st, o, mods)) continue; const c = costOf(st, o, mods), ok = Object.keys(c).every(r => V.v[r] >= c[r] - 1e-6);
+    const s = '<button class="w wide' + (ok ? '' : ' short') + (U.creed ? ' creed' : '') + (U.reg ? ' reg' : '') + '" data-a="u" data-x="' + x + '"><b>' + U.n + '<span class="n">' + Math.round(U.t * V.d.research) + ' yr</span></b><span class="cost">' + costHTML(c, V.v) + '</span><small>' + U.d + '</small></button>';
+    if (U.creed) cr += s; else up += s; }
+  if (st.proj.length) { h += '<h3>Under way</h3>'; for (const p of st.proj) h += '<div class="proj"><span>' + UPG[p.x].n + '</span><span class="dim">' + Math.max(0, p.done - G.cur).toFixed(0) + ' yr</span><div><i style="width:' + (100 * Math.min(1, (G.cur - p.t0) / (p.done - p.t0))).toFixed(1) + '%"></i></div></div>'; }
+  if (up) h += '<h3>Learn</h3><div class="grid one">' + up + '</div>';
+  if (cr) h += '<h3>Swear a creed <span class="dim">one per lane</span></h3><div class="grid one">' + cr + '</div>';
+  const known = Object.keys(st.up); if (known.length) h += '<h3>Known</h3><p class="tags">' + known.map(k => '<span>' + UPG[k].n + '</span>').join('') + '</p>';
+  setHTML('pWorks', h);
+}
+function renderOrders(b) {
+  const s = sim(b), done = new Map(); for (const r of s.recs) if (r.t <= G.H) done.set(r.id, r);
+  const end = s.at(G.H).st.dead;
+  let h = '<h3>Orders in this lane <span class="dim">' + b.orders.length + '</span></h3>';
+  if (!b.orders.length) h += '<p class="dim">Nothing yet. Whatever you order is carried out at the cursor\'s year, and everything after it is recomputed.</p>';
+  h += '<ol class="orders">'; let marked = false;
+  const mark = () => { if (!marked) { marked = true; h += '<li class="now">cursor · year ' + yr(G.cur) + '</li>'; } };
+  for (const o of b.orders) {
+    if (o.t > G.cur) mark();
+    const r = done.get(o.id); let s2, cls = '';
+    if (!r) { cls = 'wait'; s2 = end && end <= G.H ? 'lost with the lane' : 'waiting'; }
+    else if (r.s === 'void') { cls = 'void'; s2 = 'void'; }
+    else { s2 = r.t - o.t > .5 ? 'done ' + yr(r.t) : '✓'; if (r.done && r.done > G.H) s2 = 'begun'; }
+    h += '<li class="' + cls + '" data-a="goto" data-t="' + o.t + '"><span class="y">' + yr(o.t) + '</span><span class="what">' + describe(o) + '</span><span class="s">' + s2 + '</span><button data-a="del" data-id="' + o.id + '" title="Remove this order" aria-label="Remove">✕</button></li>';
+  }
+  mark(); h += '</ol>';
+  setHTML('pOrders', h);
+}
+function renderLog(b) {
+  const s = sim(b), L = []; for (let i = s.log.length - 1; i >= 0 && L.length < 9; i--) if (s.log[i].t <= G.cur) L.push(s.log[i]);
+  let h = '<h3>Chronicle</h3>'; if (!L.length) h += '<p class="dim">Year ' + yr(G.cur) + '. Nothing worth a line yet.</p>';
+  h += '<ul class="log">' + L.map(e => '<li class="' + (e.c || '') + '"><span class="y">' + yr(e.t) + '</span>' + e.x + '</li>').join('') + '</ul>';
+  setHTML('pLog', h);
+}
+function hint(b, V) {
+  const s = sim(b), st = V.st, endSt = s.at(G.H).st;
+  if (endSt.dead && endSt.dead <= G.H && G.cur >= endSt.dead) return 'This lane has fallen. Drag the cursor back to a year before it fell and change what led here. The past is not locked.';
+  if (V.seg.starving) return 'Famine. Scrub back to before it began: more farms, a granary filled in the good years, or fewer huts.';
+  if (!b.orders.length) return 'You are riding the horizon, the latest year the Archive can see. Two woodcutters are stacking timber. Order a Hut and a Farm.';
+  if (st.pend.length && !G.follow) return 'An order here is waiting for resources. It will be carried out the moment this lane can pay.';
+  if (!G.follow) return 'You are in this lane\'s past. Any order placed here rewrites everything after year ' + yr(G.cur) + '. Press End to ride the horizon again.';
+  if (G.br.length === 1 && G.H > 150) return 'Fork here copies this lane up to the cursor into a second lane. Lanes run side by side and share every Echo.';
+  if (st.b.script + st.b.shrine === 0 && st.pop >= 8) return 'A Scriptorium makes lore and a Shrine makes awe. Both lead to things the Archive would like to record.';
+  return '';
+}
+function renderAll() {
+  const b = act(), V = sim(b).at(G.cur), sp = speed();
+  setHTML('hz', 'Horizon <b>year ' + yr(G.H) + '</b><span>+' + sp.toFixed(sp < 10 ? 2 : 1) + ' yr/s</span>');
+  setHTML('nEcho', String(Object.keys(G.echo).length));
+  setHTML('curY', 'Year <b>' + yr(G.cur) + '</b>' + (G.follow ? '<span>riding the horizon</span>' : '<span>' + yr(G.H - G.cur) + ' yr before the horizon</span>'));
+  $('bFollow').classList.toggle('on', G.follow);
+  $('bFit').hidden = !G.view;
+  setHTML('hint', hint(b, V));
+  renderLanes(); renderState(b, V); renderJobs(V); renderWorks(V); renderOrders(b); renderLog(b);
+}
+
+/* --- archive, intro, ending --- */
+function openModal(h) { $('mBody').innerHTML = h; $('modal').hidden = false; }
+function closeModal() { $('modal').hidden = true; if (G.intro) { G.intro = false; save(); } }
+function archiveHTML() {
+  const sp = echoSpeed(); let res = 0; const rows = G.br.map(b => { const r = resonance(b); res += r; return '<li class="sub"><span><i style="background:' + HUES[b.hue] + '"></i>' + esc(b.name) + '</span><span>+' + r.toFixed(2) + '</span></li>'; }).join('');
+  let h = '<h2>The Archive</h2><p class="lede">It stands at the end of time, so it is finished with time. What a lane does once, in any year the horizon has passed, is recorded here for good, even if you later rewrite that lane or prune it.</p>';
+  h += '<div class="cols"><div><h3>How fast the horizon recedes</h3><ul class="sum"><li>One year each second<span>1.00</span></li><li>Echoes<span>×' + (1 + sp).toFixed(2) + '</span></li><li>Resonance of living lanes<span>×' + (1 + res).toFixed(2) + '</span></li>' + rows + '<li class="tot">Now<span>' + speed().toFixed(2) + ' yr/s</span></li></ul><p class="dim">A lane resonates with the Memory it holds at the horizon. Memory comes from people living, and from lore and awe left unspent. Fallen lanes are silent.</p></div><div><h3>Trials witnessed</h3>';
+  const seen = TRIALS.filter(T => G.H >= T.t - 45);
+  if (!seen.length) h += '<p class="dim">None yet. The horizon has not reached one.</p>';
+  for (const T of seen) h += '<div class="trial"><b>' + T.n + ' · year ' + T.t + '</b>' + (G.H < T.t ? '<p class="dim">Something is coming.</p>' : '<p>A lane must hold one of: ' + Object.keys(T.ans).map(k => fmt(T.ans[k].need) + ' ' + RN[T.ans[k].r].toLowerCase()).join(', ') + '. It pays that and lives. A sworn lane tries its own creed\'s answer first.</p>') + '</div>';
+  if (G.H >= FINAL_T - 60) h += '<div class="trial"><b>The Unmaking · year ' + FINAL_T + '</b><p>' + (G.H < FINAL_T ? 'Something is coming, and it is the last thing.' : 'It asks for three regalia in one lane: the Sword, the Bell and the Lens. No single creed can make all three. One lane can make its own and Recall the others, once other lanes have made them.') + '</p></div>';
+  h += '</div></div><h3>Echoes <span class="dim">' + Object.keys(G.echo).length + ' recorded</span></h3><div class="echoes">';
+  const gate = e => e.after === undefined || (e.after === 'w' ? G.H > 300 : e.after === 2 ? G.H >= FINAL_T : G.H >= TRIALS[e.after].t);
+  for (const k in ECHO) { const e = ECHO[k];
+    if (G.echo[k]) h += '<div class="echo got"><b>' + e.n + '</b><p>' + e.fx + '</p><small>horizon year ' + yr(G.echo[k]) + '</small></div>';
+    else if (!e.secret && gate(e)) h += '<div class="echo"><b>Unrecorded</b><p>' + e.how + '</p></div>'; }
+  h += '</div><p class="dim">Some echoes leave no outline until they are found.</p>';
+  h += '<h3>Save</h3><p class="dim">The game saves in this browser. Copy the save text to keep a backup or move it elsewhere.</p><div class="saverow"><button data-a="copy">Copy save text</button><input id="saveIn" placeholder="Paste save text here" aria-label="Save text to load"><button data-a="loadsave">Load</button><button data-a="reset" class="danger">Start over</button></div>';
+  return h;
+}
+function introHTML() {
+  return '<h2>Errata at the End of Time</h2><div class="story"><p>Everything has already happened. You keep the Archive at the far end of it, where the last light is filed.</p><p>One small people, four of them, start beside a river in year 0. Their history is short and ends badly. You are permitted to make corrections.</p><p>The <b>horizon</b> is the latest year you can see. It recedes on its own, about a year each second, whether you watch or not. Drag along the river to visit any year behind it. Whatever you order there happens in that year, and every later year is rewritten at once.</p><p>When one history is not enough, <b>fork</b> it. Lanes run side by side. What any lane achieves is recorded as an <b>Echo</b>, and Echoes change every lane.</p></div><button data-a="close" class="primary">Open the Archive</button>';
+}
+function endingHTML() {
+  const mins = Math.round((Date.now() - G.born) / 60000), w = G.br.find(b => sim(b).at(G.H).st.tr[2]);
+  return '<h2>The Morning After the End</h2><div class="story"><p>In year ' + FINAL_T + ' of the ' + esc(w ? w.name : 'last') + ' lane, the Unmaking arrived on schedule and found three things waiting that could not all have been made in one history.</p><p>It was shown its own face. It rang backward. It broke on an edge. Then it was morning, which the Archive has no shelf for.</p><p>' + (w ? civName(w) : 'They') + ' will never know there was an Archivist. They left you a line anyway, carved where the horizon would reach it: <i>to whoever kept correcting us, thank you for not stopping at the first draft.</i></p>' +
+    '<p class="dim">Lanes kept: ' + G.br.map(b => esc(b.name)).join(', ') + '.' + (G.pruned.length ? ' Lanes pruned, and remembered here anyway: ' + G.pruned.map(esc).join(', ') + '.' : ' No lane was pruned.') + ' ' + Object.keys(G.echo).length + ' echoes, ' + mins + ' minutes of your own time.</p><p>The horizon keeps receding. The lanes are still yours.</p></div><button data-a="close" class="primary">Keep reading</button>';
+}
+
+/* --- input --- */
+function eventTimes(b) { const s = sim(b), a = new Set([0]); for (const r of s.recs) a.add(r.t); for (const o of b.orders) a.add(o.t); for (const l of s.log) a.add(l.t); for (const f of s.feats) a.add(f.t); return [...a].filter(t => t <= G.H).sort((x, y) => x - y); }
+function jump(dir) { const ts = eventTimes(act()); let t = dir > 0 ? ts.find(x => x > G.cur + 1e-6) : [...ts].reverse().find(x => x < G.cur - 1e-6); if (t === undefined) { if (dir > 0) { G.follow = true; G.cur = G.H; } } else { G.cur = t; G.follow = false; } dirty = true; }
+function nudge(d) { G.cur = Math.max(0, Math.min(G.H, (d > 0 ? Math.floor(G.cur) : Math.ceil(G.cur)) + d)); G.follow = G.cur >= G.H; dirty = true; }
+function shake() {
+  G.shakes++; G.H += 300; latch('shaken'); checkEchoes(); dirty = true;
+  const q = ['Three centuries fall through at once.', 'Again? The sand does not mind.', 'The Archive pretends not to notice.', 'You could also just wait. You know that.', 'At this point it is less an hourglass than a maraca.'];
+  toast('<b>You shook the hourglass</b><small>' + q[Math.min(q.length - 1, G.shakes - 1)] + '</small>');
+}
+function onClick(e) {
+  const el = e.target.closest('[data-a]'); if (!el) return; const a = el.dataset.a, x = el.dataset.x, b = act();
+  if (a !== 'prune') pruneAsk = null;
+  if (a === 'b') { const n = e.shiftKey ? 5 : 1; for (let i = 0; i < n; i++) place({ k: 'b', x }); }
+  else if (a === 'u') place({ k: 'u', x });
+  else if (a === 'lim') { const V = sim(b).at(G.cur), sl = V.d.slots[x], cur = V.st.lim[x] == null ? sl : Math.min(sl, V.st.lim[x]); let n = Math.max(0, cur + (+el.dataset.d)); place({ k: 'l', x, n: n >= sl ? null : n }); }
+  else if (a === 'up' || a === 'dn') { const list = sim(b).at(G.cur).st.prio.slice(), i = list.indexOf(x), j = i + (a === 'up' ? -1 : 1); if (j < 0 || j >= list.length) return;[list[i], list[j]] = [list[j], list[i]]; place({ k: 'p', list }); }
+  else if (a === 'del') { e.stopPropagation(); const id = +el.dataset.id, o = b.orders.find(o => o.id === id); if (o) edit(b, o.t, arr => arr.splice(arr.indexOf(o), 1)); }
+  else if (a === 'goto') { G.cur = Math.min(G.H, +el.dataset.t); G.follow = false; }
+  else if (a === 'sel') { G.act = +el.dataset.id; }
+  else if (a === 'ren') { e.stopPropagation(); const id = +el.dataset.id, row = el.closest('.lane'), bb = lane(id); renaming = id; row.innerHTML = '<input id="renIn" maxlength="24" aria-label="Lane name" value="' + esc(bb.name) + '">'; cache.lanes = null; const inp = $('renIn'); inp.focus(); inp.select(); inp.onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter') rename(id, inp.value); if (ev.key === 'Escape') { renaming = null; dirty = true; } }; inp.onblur = () => { if (renaming === id) rename(id, inp.value); }; inp.onclick = ev => ev.stopPropagation(); return; }
+  else if (a === 'prune') { e.stopPropagation(); const id = +el.dataset.id; if (pruneAsk === id) { pruneAsk = null; prune(id); } else pruneAsk = id; }
+  else if (a === 'fork') fork();
+  else if (a === 'unravel') { const t = G.cur; if (b.orders.some(o => o.t > t)) edit(b, t, arr => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i].t > t) arr.splice(i, 1); }); }
+  else if (a === 'undo') undo();
+  else if (a === 'follow') { G.follow = !G.follow; if (G.follow) G.cur = G.H; else G.cur = Math.floor(G.cur); }
+  else if (a === 'fit') G.view = null;
+  else if (a === 'prev') jump(-1); else if (a === 'next') jump(1);
+  else if (a === 'back') nudge(-1); else if (a === 'fwd') nudge(1);
+  else if (a === 'archive') openModal(archiveHTML());
+  else if (a === 'close') closeModal();
+  else if (a === 'copy') { const t = JSON.stringify(G); const done = () => { el.textContent = 'Copied'; }; try { navigator.clipboard.writeText(t).then(done, () => { $('saveIn').value = t; $('saveIn').select(); }); } catch (err) { $('saveIn').value = t; $('saveIn').select(); } }
+  else if (a === 'loadsave') { if (load($('saveIn').value.trim())) { G.last = Date.now(); undoStack = []; rebuild(); checkEchoes(); closeModal(); toast('<b>Save loaded</b>'); } else toast('<b>That text is not a save</b><small>Paste the whole thing, from the first brace to the last.</small>'); }
+  else if (a === 'reset') { if (el.dataset.sure) { newGame(); undoStack = []; rebuild(); save(); openModal(introHTML()); } else { el.dataset.sure = 1; el.textContent = 'Erase everything?'; } }
+  else if (a === 'glass') { const now = Date.now(); clicks = clicks.filter(t => now - t < 2500); clicks.push(now); el.classList.remove('tilt'); void el.offsetWidth; el.classList.add('tilt'); if (clicks.length >= 7) { clicks = []; shake(); } }
+  dirty = true;
+}
+function onKey(e) {
+  if (e.target.tagName === 'INPUT' || e.metaKey || e.altKey) return;
+  if (!$('modal').hidden) { if (e.key === 'Escape') closeModal(); return; }
+  const k = e.key;
+  if (k === 'ArrowLeft') nudge(e.shiftKey ? -10 : -1); else if (k === 'ArrowRight') nudge(e.shiftKey ? 10 : 1);
+  else if (k === 'Home') { G.cur = 0; G.follow = false; } else if (k === 'End') { G.follow = true; G.cur = G.H; }
+  else if (k === ',' || k === '<') jump(-1); else if (k === '.' || k === '>') jump(1);
+  else if ((k === 'z' || k === 'Z') && e.ctrlKey) undo(); else if (k === 'f' && !e.ctrlKey) fork();
+  else if (k >= '1' && k <= '9' && G.br[+k - 1]) G.act = G.br[+k - 1].id;
+  else return;
+  e.preventDefault(); dirty = true;
+}
+function frame() {
+  const now = Date.now(), dt = Math.max(0, (now - G.last) / 1000); G.last = now;
+  advance(dt); if (G.follow) G.cur = G.H; if (G.cur > G.H) G.cur = G.H;
+  if (!lane(G.act)) G.act = G.br[0].id;
+  drawRiver();
+  if (dirty || now - panelT > 200) { renderAll(); panelT = now; dirty = false; }
+  if (now - saveT > 8000) { save(); saveT = now; }
+  requestAnimationFrame(frame);
+}
+function start(hot) {
+  let raw = null; try { raw = localStorage.getItem(KEY); } catch (e) { }
+  if (!(hot && load(hot)) && !load(raw)) newGame();
+  rebuild();
+  const away = (Date.now() - G.last) / 1000, H0 = G.H;
+  if (away > 0) { advance(away); G.last = Date.now(); if (away > 60 && !G.intro) toast('<b>While you were away</b><small>' + yr(G.H - H0) + ' years went by at the horizon.</small>'); }
+  checkEchoes();
+  document.addEventListener('click', onClick); document.addEventListener('keydown', onKey);
+  const cv = $('cv'); let drag = false;
+  cv.addEventListener('pointerdown', e => { drag = true; cv.setPointerCapture(e.pointerId); const r = cv.getBoundingClientRect(), i = Math.floor((e.clientY - r.top - TOP) / ROW); if (G.br[i]) G.act = G.br[i].id; scrubTo(e); });
+  cv.addEventListener('pointermove', e => { if (drag) scrubTo(e); });
+  cv.addEventListener('pointerup', () => { drag = false; }); cv.addEventListener('pointercancel', () => { drag = false; });
+  cv.addEventListener('dblclick', () => { G.view = null; });
+  cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(), [v0, v1] = getView(), tm = v0 + (e.clientX - r.left) / r.width * (v1 - v0), f = Math.exp(e.deltaY * 0.0015); let a = tm - (tm - v0) * f, b = tm + (v1 - tm) * f; if (b - a < 20) { const m = (a + b) / 2; a = m - 10; b = m + 10; } a = Math.max(0, a); b = Math.min(G.H, b); G.view = (a <= 0 && b >= G.H) ? null : [a, b]; }, { passive: false });
+  window.addEventListener('beforeunload', save); document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+  if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => JSON.parse(JSON.stringify(G)));
+  if (G.intro) openModal(introHTML());
+  window.errata = { state: () => G, sims, skip: y => { G.H += y; checkEchoes(); dirty = true; } };
+  requestAnimationFrame(frame);
+}
+
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? null);
+</script>
+</body>
+</html>
